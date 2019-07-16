@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>MUnit Coverage Report</title>
+    <link rel="stylesheet" type="text/css" href="assets/styles/mulesoft-styles.css">
+    <link rel="stylesheet" type="text/css" href="assets/styles/tsorter.css">
+</head>
+<body>
+<div class="mulesoft-topbar">
+    <div class="mulesoft-appbar">
+        <div class="muleicon muleicon-logo"></div>
+        <div class="anypoint-brand">MUnit Coverage Report - Mule Configuration Files</div>
+    </div>
+</div>
+<div class="col-md-8 col-md-offset-2">
+    <h2 class="text-bold">Application Coverage*</h2>
+    <div class="progress">
+        <span>75%</span>
+        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="75" aria-valuemin="0"
+             aria-valuemax="100" style="width: 75%;">
+        </div>
+    </div>
+    <ul class="list-unstyled">
+        <li>
+            <h4><b>Required Application Coverage :</b>
+                N/A
+            </h4>
+        </li>
+    </ul>
+    <h2 class="text-bold">Mule Configuration Files</h2>
+    <table id="resources_table" class="table table-featured table-hover sortable">
+        <thead>
+        <tr>
+            <th colspan="2" data-tsorter="link">Resource</th>
+            <th data-tsorter="numeric">#Containers</th>
+            <th data-tsorter="numeric">Weight%**</th>
+            <th data-tsorter="coverage">Coverage*</th>
+        </tr>
+        </thead>
+        <tbody id="table-body">
+        <tr>
+            <td colspan="2"><a href=peopledoc-integration-upload-file-report.html>peopledoc-integration-upload-file.xml</a></td>
+            <td>1</td>
+            <td>8.33</td>
+            <td>
+                    <div class="progress">
+                        <span>100%</span>
+                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100"
+                             aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+                        </div>
+                    </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><a href=mule-integration-peopledoc-demographic-information-report.html>mule-integration-peopledoc-demographic-information.xml</a></td>
+            <td>3</td>
+            <td>33.33</td>
+            <td>
+                    <div class="progress">
+                        <span>85.71%</span>
+                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="85.714"
+                             aria-valuemin="0" aria-valuemax="100" style="width: 85.714%;">
+                        </div>
+                    </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><a href=mule-integration-peopledoc-user-profile-report.html>mule-integration-peopledoc-user-profile.xml</a></td>
+            <td>2</td>
+            <td>20.24</td>
+            <td>
+                    <div class="progress">
+                        <span>100%</span>
+                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100"
+                             aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+                        </div>
+                    </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><a href=common-configurations-report.html>common-configurations.xml</a></td>
+            <td>2</td>
+            <td>5.95</td>
+            <td>
+                    <div class="progress">
+                        <span>20%</span>
+                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="20"
+                             aria-valuemin="0" aria-valuemax="100" style="width: 20%;">
+                        </div>
+                    </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><a href=mule-integration-peopledoc-organization-report.html>mule-integration-peopledoc-organization.xml</a></td>
+            <td>2</td>
+            <td>16.67</td>
+            <td>
+                    <div class="progress">
+                        <span>100%</span>
+                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100"
+                             aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+                        </div>
+                    </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2"><a href=peopledoc-integration-message-processor-report.html>peopledoc-integration-message-processor.xml</a></td>
+            <td>1</td>
+            <td>15.48</td>
+            <td>
+                    <div class="progress">
+                        <span>0%</span>
+                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0"
+                             aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+                        </div>
+                    </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <h4>(*) Number of processors executed during test</h4>
+    <h4>(**) Number of processors inside the resource over the total number of processors in the application</h4>
+</div>
+<script type="text/javascript" src="assets/js/tsorter.min.js"></script>
+<script type="text/javascript">
+    function init() {
+        var sorter = tsorter.create('resources_table', 0, {
+            coverage: function (row) {
+                var cov = this.getCell(row).childNodes[1].childNodes[3].attributes['aria-valuenow'].textContent;
+                return parseFloat(cov.substring(cov[0].length - 1), 10);
+            }
+        });
+    }
+
+    window.onload = init;
+
+</script>
+</body>
+</html>

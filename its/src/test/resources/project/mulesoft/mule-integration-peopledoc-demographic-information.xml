@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:java="http://www.mulesoft.org/schema/mule/java"
+	xmlns:ultimate-integrations="http://www.mulesoft.org/schema/mule/ultimate-integrations"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:amqp="http://www.mulesoft.org/schema/mule/amqp" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amqp/current/mule-amqp.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/ultimate-integrations http://www.mulesoft.org/schema/mule/ultimate-integrations/current/mule-ultimate-integrations.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	
+	<flow name="mule-integration-peopledoc-demographic-information-flow" doc:id="25c74cf7-feb3-4e4e-a8ea-13b9a34bf38b" >
+		<logger level="INFO" doc:name="Logger" doc:id="9b02c613-35c4-4df4-9062-c5c4d77321fe" message="Starting people-demographics flow for Tenant Id : #[vars.integrationRequest.tenantId], Integration Id : #[vars.integrationRequest.integrationId], Job Id : #[vars.integrationRequest.jobId], Dispatch Id : #[vars.integrationRequest.dispatchId]" />
+		<ee:transform doc:name="set pagination details for person details API" doc:id="2ed3ab74-474e-4186-801f-dc5e7692c0ad">
+					<ee:message>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="hxResource" ><![CDATA[%dw 2.0
+output application/java
+---
+p('http.request.person.details.resource')]]></ee:set-variable>
+						<ee:set-variable variableName="perPage" ><![CDATA[%dw 2.0
+output application/java
+---
+p('http.request.per.page')]]></ee:set-variable>
+						<ee:set-variable variableName="pageNumber" ><![CDATA[%dw 2.0
+output application/java
+---
+p('http.request.page.number')]]></ee:set-variable>
+						<ee:set-variable variableName="hxBasePath" ><![CDATA[%dw 2.0
+output application/java
+---
+p('http.request.person.details.base.path')]]></ee:set-variable>
+				<ee:set-variable variableName="optionalQueryParam" ><![CDATA[%dw 2.0
+output application/java
+---
+"&isEmployee=1" ++ "&runId=" ++ vars.integrationRequest.jobId]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+		<flow-ref doc:name="Ultipro Person details Response Aggregation" doc:id="67ea9e58-7916-425a-8479-62ce3893df93" name="mule-integration-peopledoc-http-response-aggregator-flow" target="ultiproPersonDetailsResponse" targetValue="#[payload]"/>
+		<ee:transform doc:name="Create UserId-UserKey Map" doc:id="002a1b7c-3a65-4710-a18d-6558f294ec65">
+							<ee:message>
+							</ee:message>
+							<ee:variables>
+								<ee:set-variable variableName="ultiproUserIdAndKeyMap"><![CDATA[%dw 2.0
+output application/java
+---
+{(
+	vars.ultiproUserProfileResponse map 
+{
+   ($.userId) : $.integrationUserKey
+})}]]></ee:set-variable>
+							</ee:variables>
+						</ee:transform>
+		<flow-ref doc:name="Call mapping flow" doc:id="63fb8997-552d-4299-b1a0-2d05611718c1" name="mule-integration-peopledoc-demographic-information-mapping-flow"/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="e6e21d43-ce2d-4d47-ae3b-74de5e5e3e49" type="ANY">
+				<logger level="ERROR" doc:name="Log request" doc:id="b93aaa54-e589-4765-baf0-57d689bcab46" message="Error Occured while processing Demographic Information file for Tenant Id : #[vars.integrationRequest.tenantId], Integration Id : #[vars.integrationRequest.integrationId], Job Id : #[vars.integrationRequest.jobId], Dispatch Id : #[vars.integrationRequest.dispatchId] ***************** Error is ****************** : #[error]"/>
+				<amqp:publish config-ref="AMQP_Config_Secure" doc:name="Publish Exception to Message Recorder" doc:id="e4bebfb8-92df-4f78-900d-f0677dcc246d" exchangeName="${exceptions.exchange}">
+					<amqp:routing-keys>
+						<amqp:routing-key value="${exceptions.queue}" />
+					</amqp:routing-keys>
+					<amqp:message>
+						<amqp:body><![CDATA[#[%dw 2.0
+output application/json
+var tenantId = if(vars.integrationRequest.tenantId != null) vars.integrationRequest.tenantId else ""
+---
+{	
+	serviceName: "PeopleDoc",
+	originClass: "Namespace: " ++ error.errorType.parentErrorType.namespace ++ " Identifier: " ++ error.errorType.parentErrorType.identifier,
+	exceptionType: "Namespace: " ++ error.errorType.namespace ++ " Identifier: " ++ error.errorType.identifier,
+	message: "Tenant: " ++ tenantId ++ " Description: " ++ error.description ++ " Detailed description: " ++ error.detailedDescription ++ " Cause: " ++ error.cause.localizedMessage,
+	stacktrace: "",
+	timestamp: now() as Number{unit: "seconds"},
+	tenantId: tenantId
+
+}]]]></amqp:body>
+					</amqp:message>
+				</amqp:publish>
+				<set-variable value='#[%dw 2.0
+output application/json
+
+---
+{
+	"status" : "FAILURE : "++ error.exception.message
+}]' doc:name="Set File Generation status" doc:id="574c3172-0366-42c3-86ff-029b150ee596" variableName="peopledocDemographicInformationFileStatus"/>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	
+	<flow name="mule-integration-peopledoc-demographic-information-mapping-flow" doc:id="d4a5f375-14fa-46ba-9b07-59b4e2123fee" >
+		<logger level="DEBUG" doc:name="Logger" doc:id="cfc85f88-80b9-4d9a-9457-e82c3fdf0332" message="Create list of e-mail for Tenant Id : #[vars.integrationRequest.tenantId], Integration Id : #[vars.integrationRequest.integrationId]" />
+		<ee:transform doc:name="Create list of all email addresses" doc:id="a1d32346-dbf9-4d46-8610-4dbe65df4ff1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+vars.ultiproPersonDetailsResponse map (item, index) -> (lower(item.email))]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="DEBUG" doc:name="Logger" doc:id="8c1804f6-48ce-4726-9a6e-1c53e2eb5389" message="Gathering duplicate email addresses for Tenant Id : #[vars.integrationRequest.tenantId], Integration Id : #[vars.integrationRequest.integrationId]" />
+		<java:invoke-static doc:name="Gather duplicate email addresses" doc:id="3caa2e63-d36d-45c1-a066-f0716f61eba6" class="mulesoft.peopledoc.integration.DuplicateEmailListCreator" method="createDuplicateEmailList(List)" target="duplicateEmailList">
+			<java:args ><![CDATA[#[{arg0: payload}]]]></java:args>
+		</java:invoke-static>
+		<logger level="DEBUG" doc:name="Logger" doc:id="b25df261-e929-409f-866d-8e379357167f" message="Duplicate e-mail size #[sizeOf(vars.duplicateEmailList)] Map UltiPro response for Tenant Id : #[vars.integrationRequest.tenantId], Integration Id : #[vars.integrationRequest.integrationId]" />
+		<ee:transform doc:name="Map Ultipro response" doc:id="77cf7f5a-2c41-4b5f-ac17-c87fbec72bf0">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+import java!mulesoft::peopledoc::integration::EmailValidator
+output application/csv separator=';'
+
+fun generateEmail(userId, companyId, employeeId, email) = 
+	if(userId != null) userId ++ "@generatedemail.net"
+	else if((userId == null) and (companyId != null) and (employeeId != null)) companyId ++ employeeId ++ "@generatedemail.net"
+	else email
+fun getValidStateCode(state, locationCode, country = 'country') =
+	if(state == 'FN') Mule::lookup('location-lookup', locationCode).'state'
+	else if((state == 'BA') and (country == 'USA')) ''
+	else state
+fun truncateString(stringToTruncate, maxChars) =
+	if((maxChars > 0) and (stringToTruncate != null) and (sizeOf(stringToTruncate) > maxChars)) stringToTruncate[0 to (maxChars - 1)]
+	else stringToTruncate
+---
+vars.ultiproPersonDetailsResponse map {
+  'organization_code':$.companyId,
+  'registration_reference':$.employeeNumber,
+  'technical_id':$.personId,
+  'lastname': truncateString($.lastName, 69),
+  'maiden_name':truncateString($.formerName, 69),
+  'firstname':truncateString($.firstName, 69),
+  'professional_email':
+  		if (vars.duplicateEmailList contains lower($.email)) generateEmail($.userId, $.companyId, $.employeeId, $.email)
+  		else if (EmailValidator::isValidEmail($.email) != true) generateEmail($.userId, $.companyId, $.employeeId, $.email)
+  		else $.email,
+  'mark_inactive_former_registration_references':'',
+  'leave_empty_1':'',
+  'dob': if ($.dateOfBirth == null) '' else ($.dateOfBirth as Date {format: "yyyy-MM-dd'T'HH:mm:ss"}) as String{format: "yyyy-MM-dd"},
+  'address1':truncateString($.addressLine1, 254),
+  'address2':truncateString($.addressLine2, 254),
+  'address3':truncateString($.addressLine3, 254),
+  'zip_code':$.zipFirstFive,
+  'city': truncateString($.city, 99),
+  'country':
+  		if($.country != null) (if(($.country == 'USA') and ($.state != null) and ($.state == 'BA')) 'BS' else p($.country)) 
+  		else $.country,
+  'phone_number':$.homePhone,
+  'mobile_phone_number':'',
+  'middle_name':$.middleName,
+  'leave_empty_2':'',
+  'disable_vault':'',
+  'state':if(($.country != null) and ($.country == 'USA')) getValidStateCode($.state, $.locationCode, $.country)
+  else if(($.country != null) and ($.country == 'CAN')) getValidStateCode($.state, $.locationCode)
+  else '',
+  'language':$.languageCode,
+  'starting_date':if ($.dateOfOriginalHire == null) '' else ($.dateOfOriginalHire as Date {format: "yyyy-MM-dd'T'HH:mm:ss"}) as String{format: "yyyy-MM-dd"},
+  'opt_out_from_electronic_payslips':'',
+  'leave_empty_3':'',
+  'leave_empty_4':'',
+  'leave_empty_5':'',
+  'leave_empty_6':'',
+  'leave_empty_7':'',
+  'leave_empty_8':'',
+  'leave_empty_9':'',
+  'leave_empty_10':'',
+  'leave_empty_11':'',
+  'leave_empty_12':'',
+  'leave_empty_13':'',
+  'leave_empty_14':'',
+  'leave_empty_15':'',
+  'leave_empty_16':'',
+  'disable_distribution':'',
+  'departure_date':if ($.terminationDate == null) '' else ($.terminationDate as Date {format: "M/d/yyyy h:m:s a"}) as String {format: "yyyy-MM-dd"},
+  'saml_token':if($.userId == null) '' else vars.ultiproUserIdAndKeyMap[$.userId],
+  'job-code':$.jobCode,
+  'location':$.locationCode,
+  'org-level-1':$.organizationLevel1,
+  'org-level-2':$.organizationLevel2,
+  'org-level-3':$.organizationLevel3,
+  'org-level-4':$.organizationLevel4,
+  'pay-group	':$.payGroupCode,
+  'Deduction_Group':$.deductionGroup,
+  'Employee_Type':$.employeeTypeCode,
+  'Employment_Status':$.employeeStatus,
+  'FullTime_PartTime':$.fullTimeOrPartTime,
+  'Hourly_Salary':$.salaryOrHourly,
+  'Project':$.projectCode,
+  'Shift':$.shiftCode,
+  'supervisor-id	':$.supervisorEmployeeId,
+  'Supervisor_Name': 
+  		(if ($.supervisorLastName == null) '' else $.supervisorLastName) 
+  		++ '-' 
+  		++ (if ($.supervisorFirstName == null) '' else $.supervisorFirstName),
+  'Tax_Calculation_Group_Id':$.taxCalculationGroupId,
+  'EEID':$.employeeId,
+  'COID':$.companyId   
+ }]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		
+		<logger level="INFO" doc:name="Log file Contents" doc:id="a3a7b94e-6b0a-4964-b383-5c46080d5f93" message="Mapped Output ready to be written to the file for people-demographics for Tenant Id : #[vars.integrationRequest.tenantId], Integration Id : #[vars.integrationRequest.integrationId], Job Id : #[vars.integrationRequest.jobId], Dispatch Id : #[vars.integrationRequest.dispatchId]" />
+		<set-variable value="#[payload]" doc:name="Set file contents" doc:id="93126cc2-44b0-4ca0-8fe5-9dd369eb5ac8" variableName="fileContents"/>
+		<ee:transform doc:name="set file name" doc:id="6f339a67-9ec3-481d-8900-2ed3f4bbf2f0" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="fileDetails" ><![CDATA[%dw 2.0
+output application/json
+ var fileNameStart ='ndmat_'
+ var username = vars.integrationRequest.fileTransferFields.sftpUsername
+ var underscore = '_'
+ var timestamp = now()
+ var sal = 'sal'
+ var csv = '.csv'
+ var directory = 'in/sal'
+---
+{
+	'fileName':
+	fileNameStart as String 
+	++ username as String 
+	++ underscore as String
+	++ username as String 
+	++ underscore as String
+	++ sal as String
+	++ underscore as String
+	++ timestamp as String{format: 'yyMMddHHmmssSSS'}
+	++ csv as String,
+	'directory': directory as String
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		
+		<logger level="INFO" doc:name="Logger" doc:id="3ad44c0c-cf2c-4727-8899-3c1c79e69e1e" message="Calling SFTP Upload Flow from people-demographics for Tenant Id : #[vars.integrationRequest.tenantId], Integration Id : #[vars.integrationRequest.integrationId], Job Id : #[vars.integrationRequest.jobId], Dispatch Id : #[vars.integrationRequest.dispatchId]"/>
+		<flow-ref doc:name="Upload File" doc:id="1c2ad91c-7dc4-4660-8e50-ffe26f7e352b" name="peopledoc-integration-upload-fileFlow"/>
+		<set-variable value='#[%dw 2.0
+output application/json
+
+---
+{
+	"status" : "SUCCESS"
+}]' doc:name="Set File generation status" doc:id="dc4197c9-be58-4004-8f4b-a82f49489395" variableName="peopledocDemographicInformationFileStatus"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="029e6c90-9811-4a02-b26c-f1b54972e6c5" type="ANY"/>
+		</error-handler>
+	</flow>
+	<flow name="location-lookup" doc:id="7e673494-7b83-4220-9533-1e62dcbc7ff4" >
+		<set-variable value="#[p('http.request.locations.resource') ++ payload]" doc:name="Set Location Code" doc:id="4c953094-835d-4ebf-b03c-bf9b4a24eb63" variableName="locationResource"/>
+		<logger level="INFO" doc:name="Logger" doc:id="d3425981-b517-463a-af80-e280d36bc054" message="Starting lookup  #[vars.locationResource] for Tenant Id : #[vars.integrationRequest.tenantId], Integration Id : #[vars.integrationRequest.integrationId], Job Id : #[vars.integrationRequest.jobId], Dispatch Id : #[vars.integrationRequest.dispatchId]"/>
+		<choice doc:name="Choice" doc:id="6cb02767-1049-42a8-97bf-8f52f4f68574" >
+			<when expression="#[vars.integrationRequest.'hxScheme'=='https']">
+				<http:request method="GET" doc:name="Https Request" doc:id="c0b557ff-fd56-4fd5-a100-5dd4b18b431c" config-ref="HTTP_Ultipro_Configuration_Request_Configuration_Secure" path="#[vars.locationResource]">
+					<http:headers ><![CDATA[#[output application/java
+---
+{
+	"US-CUSTOMER-API-KEY" : vars.integrationRequest.'apiKey',
+	"Content-Type" : "application/json",
+	"Accept" : "application/json",
+	"US-Client-Id" : vars.integrationRequest.'clientId'
+}]]]></http:headers>
+				</http:request>
+			</when>
+			<otherwise>
+				<http:request method="GET" doc:name="Http Request" doc:id="be52ccc4-566d-40a5-8af5-f97058f68ada" config-ref="HTTP_Ultipro_Configuration_Request_Configuration" path="#[vars.locationResource]" >
+					<http:headers ><![CDATA[#[output application/java
+---
+{
+	"US-CUSTOMER-API-KEY" : vars.integrationRequest.'apiKey',
+	"Content-Type" : "application/json",
+	"Accept" : "application/json",
+	"US-Client-Id" : vars.integrationRequest.'clientId'
+}]]]></http:headers>
+				</http:request>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="314eacd4-37f1-4fc6-a615-84f5a90bf64f" message="Finished location lookup  #[vars.locationResource] for Tenant Id : #[vars.integrationRequest.tenantId], Integration Id : #[vars.integrationRequest.integrationId], Job Id : #[vars.integrationRequest.jobId], Dispatch Id : #[vars.integrationRequest.dispatchId]"/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue - Return Blank State" doc:id="5d80bc74-57bc-47e0-add5-aa3ced8a10de" type="ANY" >
+				<logger level="ERROR" doc:name="Log request" doc:id="009f1282-b4d0-4d98-8ad6-fd0cd416b930" message="Error Occured while location lookup for Tenant Id : #[vars.integrationRequest.tenantId], Integration Id : #[vars.integrationRequest.integrationId], Job Id : #[vars.integrationRequest.jobId], Dispatch Id : #[vars.integrationRequest.dispatchId] ***************** Error is ****************** : #[error]" />
+				<amqp:publish config-ref="AMQP_Config_Secure" doc:name="Publish Exception to Message Recorder" doc:id="91f499a7-1b7e-4e08-9452-d8e90085a2be" exchangeName="${exceptions.exchange}">
+					<amqp:routing-keys>
+						<amqp:routing-key value="${exceptions.queue}" />
+					</amqp:routing-keys>
+					<amqp:message>
+						<amqp:body><![CDATA[#[%dw 2.0
+output applicaiton/json
+var tenantId = if(vars.integrationRequest.tenantId != null) vars.integrationRequest.tenantId else ""
+---
+{	
+	serviceName: "PeopleDoc",
+	originClass: "Namespace: " ++ error.errorType.parentErrorType.namespace ++ " Identifier: " ++ error.errorType.parentErrorType.identifier,
+	exceptionType: "Namespace: " ++ error.errorType.namespace ++ " Identifier: " ++ error.errorType.identifier,
+	message: "Tenant: " ++ tenantId ++ " Description: " ++ error.description ++ " Detailed description: " ++ error.detailedDescription ++ " Cause: " ++ error.cause.localizedMessage,
+	stacktrace: "",
+	timestamp: now() as Number{unit: "seconds"},
+	tenantId: tenantId
+
+}]]]></amqp:body>
+					</amqp:message>
+				</amqp:publish>
+				<set-payload value='{"state":""}' doc:name="Set State field to empty string" doc:id="2fff3b39-d555-418e-a389-bbe9d8506d11" mimeType="application/json"/>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+
+</mule>

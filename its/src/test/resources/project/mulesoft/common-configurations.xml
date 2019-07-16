@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:sftp="http://www.mulesoft.org/schema/mule/sftp" 
+	xmlns:java="http://www.mulesoft.org/schema/mule/java"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" 
+	xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:amqp="http://www.mulesoft.org/schema/mule/amqp" 
+	xmlns="http://www.mulesoft.org/schema/mule/core" 
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ultimate-integrations="http://www.mulesoft.org/schema/mule/ultimate-integrations" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sftp/current/mule-sftp.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd 
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amqp/current/mule-amqp.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/ultimate-integrations http://www.mulesoft.org/schema/mule/ultimate-integrations/current/mule-ultimate-integrations.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+
+	<configuration-properties doc:name="Configuration properties" doc:id="da6dc97c-0423-4655-8475-00b7ecd5da30" file="config-${muleenv}.properties" />
+	<configuration-properties doc:name="SFTP Configuration properties" doc:id="6ad5498f-3b39-418c-b5be-8d7481410385" file="sftp-config.properties" />
+
+	<amqp:config name="AMQP_Config_Secure" doc:name="Amqp Config" doc:id="e469f224-3205-4212-afc5-d4b477846800" >
+		<amqp:connection host="${amqp.host}" port="${amqp.port}" username="${amqp.user}" password="${amqp.password}" virtualHost="${amqp.vhost}"  useTls="true" tlsContext="TLS_Context">
+			<reconnection>
+				<reconnect frequency="${amqp.reconnection.frequency}" count="${amqp.reconnection.attempts}"/>
+			</reconnection>
+		</amqp:connection>
+	</amqp:config>
+
+	<http:request-config name="HTTP_Ultipro_Configuration_Request_Configuration" doc:name="HTTP Request configuration" doc:id="f90f807f-8206-4015-82c1-ca9e8f418f24" basePath="${http.request.configuration.base.path}" >
+		<http:request-connection host="#[vars.integrationRequest.'hxBase']" protocol="HTTP">
+			<reconnection >
+				<reconnect frequency="${http.request.reconnection.frequency}" count="${http.request.reconnection.attempts}" />
+			</reconnection>
+			<http:authentication >
+				<http:basic-authentication username="#[vars.integrationRequest.'username']" password="#[vars.integrationRequest.'password']" />
+			</http:authentication>
+		</http:request-connection>
+	</http:request-config>
+	
+	<http:request-config name="HTTP_Ultipro_Configuration_Request_Configuration_Secure" doc:name="HTTP Request configuration" doc:id="f90f807f-8206-4015-82c1-ca9e8f418f24" basePath="${http.request.configuration.base.path}" >
+		<http:request-connection host="#[vars.integrationRequest.'hxBase']" protocol="HTTPS">
+			<reconnection >
+				<reconnect frequency="${http.request.reconnection.frequency}" count="${http.request.reconnection.attempts}" />
+			</reconnection>
+			<http:authentication >
+				<http:basic-authentication username="#[vars.integrationRequest.'username']" password="#[vars.integrationRequest.'password']" />
+			</http:authentication>
+		</http:request-connection>
+	</http:request-config>
+	
+	<http:request-config name="HTTP_Ultipro_Personnel_Request_Configuration" doc:name="HTTP Request configuration" doc:id="f90f807f-8206-4015-82c1-ca9e8f418f24" basePath="${http.request.personnel.base.path}" >
+		<http:request-connection host="#[vars.integrationRequest.'hxBase']" protocol="HTTP">
+			<reconnection >
+				<reconnect frequency="${http.request.reconnection.frequency}" count="${http.request.reconnection.attempts}" />
+			</reconnection>
+			<http:authentication >
+				<http:basic-authentication username="#[vars.integrationRequest.'username']" password="#[vars.integrationRequest.'password']" />
+			</http:authentication>
+		</http:request-connection>
+	</http:request-config>
+	
+	<http:request-config name="HTTP_Ultipro_Personnel_Request_Configuration_Secure" doc:name="HTTP Request configuration" doc:id="f90f807f-8206-4015-82c1-ca9e8f418f24" basePath="${http.request.personnel.base.path}" >
+		<http:request-connection host="#[vars.integrationRequest.'hxBase']" protocol="HTTPS">
+			<reconnection >
+				<reconnect frequency="${http.request.reconnection.frequency}" count="${http.request.reconnection.attempts}" />
+			</reconnection>
+			<http:authentication >
+				<http:basic-authentication username="#[vars.integrationRequest.'username']" password="#[vars.integrationRequest.'password']" />
+			</http:authentication>
+		</http:request-connection>
+	</http:request-config>
+	
+	<tls:context name="TLS_Context">
+		<tls:key-store type="jks" path="${mule.keystore.path}" keyPassword="${mule.keystore.key.password}" password="${mule.keystore.password}" />
+	</tls:context>
+
+	<ultimate-integrations:amqp-config name="Ultimate_Integrations_Config" doc:name="Ultimate Integrations Config" doc:id="7481c657-ba23-47ac-8437-06ea29b429e2" >
+		<ultimate-integrations:connection username="${amqp.notification.user}" password="${amqp.notification.password}" vhost="${amqp.notification.vhost}" host="${amqp.notification.host}" port="${amqp.notification.port}" tlsEnabled="${tls.enabled}" />
+	</ultimate-integrations:amqp-config>
+	
+	<configuration-properties doc:name="Configuration properties" doc:id="218f32bc-01a2-4790-ab8c-272aba1a4ac1" file="country-map.properties" />
+	<configuration-properties doc:name="Configuration properties" doc:id="a1d0d5c9-1f1e-4a49-a78a-0735b65582a8" file="config.properties" />
+	<flow name="mule-integration-peopledoc-http-response-aggregator-flow" doc:id="c00a8db3-64e5-49dd-8dd7-d0e4a36484ec">
+		<java:invoke-static doc:description="#[vars.hxResource]" doc:name="Http Response Aggregator" doc:id="9040902a-33e9-458b-9b75-67c21c4ab3db" class="mulesoft.peopledoc.integration.HttpResponseAggregator" method="callUltiproAPI(String,String,String,String,String,String,String,String,int,int,String, String, int)">
+					<java:args><![CDATA[#[{arg0: vars.integrationRequest.hxScheme, arg1: vars.integrationRequest.hxBase, arg2: vars.hxBasePath, arg3: vars.hxResource, arg4: vars.integrationRequest.clientId, arg5: vars.integrationRequest.apiKey, arg6: vars.integrationRequest.username, arg7: vars.integrationRequest.password, arg8: vars.perPage, arg9: vars.pageNumber, arg10: vars.optionalQueryParam, arg11: vars.integrationRequest.jobId, arg12: ${http.api.retry}}]]]></java:args>
+		</java:invoke-static>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="85bdb3a1-3fe4-4af6-be7a-2e14022438b5" type="ANY"/>
+		</error-handler>
+	</flow>
+	
+	<flow name="decrypt-integration-request-secure-attributes-flow" doc:id="4b398d23-387a-414b-a91e-1d0f8cf8aace">
+		<logger level="INFO" doc:name="Logger" doc:id="be564e72-d9e7-42ac-a515-031524cf3ddd" message="Starting Decrypt Flow  for Tenant Id : #[vars.integrationEncryptedRequest.tenantId], Integration Id : #[vars.integrationEncryptedRequest.integrationId], Job Id : #[vars.integrationEncryptedRequest.jobId], Dispatch Id : #[vars.integrationEncryptedRequest.dispatchId]"/>
+		<ultimate-integrations:decrypt-data doc:name="Decrypt secure attributes" doc:id="91a07678-4822-4909-90ae-bc51a4b877fe" encryptedContents="#[vars.integrationEncryptedRequest.secure.encryptedContents]" outputMimeType="application/json"/>
+
+		<ee:transform doc:name="Build Decrypted Integration Request" doc:id="76c86877-e706-4dc9-808d-0b7f509434cd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	alias: vars.integrationEncryptedRequest.alias,
+	clientKey: vars.integrationEncryptedRequest.clientKey,
+	apiKey: vars.integrationEncryptedRequest.apiKey,
+	clientId: vars.integrationEncryptedRequest.clientId, 
+	hxBase: vars.integrationEncryptedRequest.hxBase,
+	hxScheme: vars.integrationEncryptedRequest.hxScheme,
+	jobId: vars.integrationEncryptedRequest.jobId,
+	tenantId: vars.integrationEncryptedRequest.tenantId,
+	integrationId: vars.integrationEncryptedRequest.integrationId,
+	dispatchId: vars.integrationEncryptedRequest.dispatchId,
+	username: payload.username,
+	password: payload.password,
+	fileTransferFields: payload.fileTransferFields
+	
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="e8cd2ed0-a475-4e26-a114-6722db622d81" message="Finished Decryption Flow  for Tenant Id : #[vars.integrationEncryptedRequest.tenantId], Integration Id : #[vars.integrationEncryptedRequest.integrationId], Job Id : #[vars.integrationEncryptedRequest.jobId], Dispatch Id : #[vars.integrationEncryptedRequest.dispatchId]"/>
+		<error-handler>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ded7afdb-4b46-470b-9ea8-1eca1a8e66eb" type="ANY"/>
+		</error-handler>
+	</flow>
+  
+  <sftp:config name="SFTP_Config" doc:name="SFTP Config" doc:id="d259fa6f-c1a4-4693-abdc-72dc4caf8f85" >
+    <sftp:connection host="#[Mule::p('sftp.server.' ++ vars.integrationRequest.fileTransferFields.fileDestination ++ '.host')]" username="#[vars.integrationRequest.fileTransferFields.sftpUsername]" identityFile="#['sftp-keys/' ++ Mule::p('sftp.server.' ++ vars.integrationRequest.fileTransferFields.fileDestination ++ '.key')]" port="#[Mule::p('sftp.server.' ++ vars.integrationRequest.fileTransferFields.fileDestination ++ '.port')]"/>
+  </sftp:config>
+</mule>

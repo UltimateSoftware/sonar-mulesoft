@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ftp="http://www.mulesoft.org/schema/mule/ftp"
+	xmlns:sftp="http://www.mulesoft.org/schema/mule/sftp"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sftp/current/mule-sftp.xsd
+http://www.mulesoft.org/schema/mule/ftp http://www.mulesoft.org/schema/mule/ftp/current/mule-ftp.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<flow name="peopledoc-integration-upload-fileFlow" doc:id="f5685fa8-f815-4801-84f7-7180dd398188" >
+		<logger level="DEBUG" doc:name="Logger" doc:id="f3a66577-2573-4612-b39e-a7d031d414eb" message='Request to write file contents to  #[vars.integrationRequest.fileTransferFields.fileDestination]' />
+		<choice doc:name="Configure path different for dev" doc:id="3926c128-2b06-4930-be3d-ce50bbcdaa06" >
+			<when expression='#[vars.integrationRequest.fileTransferFields.fileDestination == "sftp-dev"]'>
+				<set-variable value='#[output application/java --- vars.integrationRequest.alias ++ "/" ++ vars.fileDetails.directory ++ "/" ++ vars.fileDetails.fileName]' doc:name="Set file path with tenant alias" doc:id="8907453e-d708-4134-87f8-115143244a4c" variableName="filepath" />
+			</when>
+			<otherwise >
+				<set-variable value='#[output application/java --- vars.fileDetails.directory ++ "/" ++ vars.fileDetails.fileName]' doc:name="Set file path" doc:id="fe6e81f3-07a1-46d6-9b6a-9464885c870e" variableName="filepath" />
+			</otherwise>
+		</choice>
+		<logger level="DEBUG" doc:name="Log file path" doc:id="b50b6ccf-2601-45c0-957c-8de2e65f3757" message="SFTP Request to write fileContents to #[vars.filepath]" />
+		<sftp:write doc:name="Write to SFTP with filepart ext" doc:id="1fed5ad0-3a9f-43dd-8a0f-5d3b8077b721" config-ref="SFTP_Config" path='#[output application/java --- vars.filepath  ++ ".filepart"]'>
+			<sftp:content><![CDATA[#[vars.fileContents]]]></sftp:content>
+		</sftp:write>
+		<sftp:rename doc:name="Rename to remove filepart extension" doc:id="8059d94f-a0b7-4fe4-95f9-b2a7ef618fae" config-ref="SFTP_Config" path='#[output application/java --- vars.filepath  ++ ".filepart"]' to="#[output application/java --- vars.fileDetails.fileName]" />
+		<logger level="INFO" doc:name="Upload done" doc:id="c7a8db69-2d35-4287-ba12-d25e8d19dc52" message='Uploaded file to  #[vars.filepath] for Tenant Id : #[vars.integrationRequest.tenantId], Integration Id : #[vars.integrationRequest.integrationId], Job Id : #[vars.integrationRequest.jobId], Dispatch Id : #[vars.integrationRequest.dispatchId]' />
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="2b5f1639-3139-4171-a376-09ac5a5598a5" type="ANY"/>
+		</error-handler>
+	</flow>
+</mule>
