@@ -17,7 +17,19 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-@ParametersAreNonnullByDefault
-package org.sonar.plugins.jacoco;
+package org.sonar.plugins.mulesoft;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.sonar.api.Plugin;
+import org.sonar.api.config.PropertyDefinition;
+
+public class MulesoftPlugin implements Plugin {
+  @Override
+  public void define(Context context) {
+    context.addExtension(MulesoftSensor.class);
+    context.addExtension(PropertyDefinition.builder(ReportPathsProvider.REPORT_PATHS_PROPERTY_KEY)
+      .multiValues(true)
+      .category("MuleSoft")
+      .description("Paths to MuleSoft JSON coverage report files. Each path can be either absolute or relative to the project base directory.")
+      .build());
+  }
+}

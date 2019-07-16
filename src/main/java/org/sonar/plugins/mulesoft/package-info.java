@@ -17,19 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.jacoco;
+@ParametersAreNonnullByDefault
+package org.sonar.plugins.mulesoft;
 
-import org.sonar.api.Plugin;
-import org.sonar.api.config.PropertyDefinition;
-
-public class JacocoPlugin implements Plugin {
-  @Override
-  public void define(Context context) {
-    context.addExtension(JacocoSensor.class);
-    context.addExtension(PropertyDefinition.builder(ReportPathsProvider.REPORT_PATHS_PROPERTY_KEY)
-      .multiValues(true)
-      .category("JaCoCo")
-      .description("Paths to JaCoCo XML coverage report files. Each path can be either absolute or relative to the project base directory.")
-      .build());
-  }
-}
+import javax.annotation.ParametersAreNonnullByDefault;

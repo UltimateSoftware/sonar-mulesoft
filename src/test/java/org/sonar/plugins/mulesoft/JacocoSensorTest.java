@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.jacoco;
+package org.sonar.plugins.mulesoft;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -52,7 +52,7 @@ public class JacocoSensorTest {
   @Rule
   public LogTester logTester = new LogTester();
 
-  private JacocoSensor sensor = new JacocoSensor();
+  private MulesoftSensor sensor = new MulesoftSensor();
 
   @Test
   public void describe_sensor() {
@@ -65,11 +65,11 @@ public class JacocoSensorTest {
   public void import_coverage() {
     FileLocator locator = mock(FileLocator.class);
     ReportImporter importer = mock(ReportImporter.class);
-    XmlReportParser parser = mock(XmlReportParser.class);
+    JsonParser parser = mock(JsonParser.class);
     InputFile inputFile = mock(InputFile.class);
 
-    XmlReportParser.SourceFile sourceFile = new XmlReportParser.SourceFile("package", "File.java");
-    sourceFile.lines().add(new XmlReportParser.Line(1, 0, 1, 0, 0));
+    JsonParser.SourceFile sourceFile = new JsonParser.SourceFile("package", "File.java");
+    sourceFile.lines().add(new JsonParser.Line(1, 0, 1, 0, 0));
 
     when(parser.parse()).thenReturn(Collections.singletonList(sourceFile));
     when(locator.getInputFile("package", "File.java")).thenReturn(inputFile);
@@ -133,8 +133,8 @@ public class JacocoSensorTest {
   public void do_nothing_if_file_not_found() {
     FileLocator locator = mock(FileLocator.class);
     ReportImporter importer = mock(ReportImporter.class);
-    XmlReportParser parser = mock(XmlReportParser.class);
-    XmlReportParser.SourceFile sourceFile = mock(XmlReportParser.SourceFile.class);
+    JsonParser parser = mock(JsonParser.class);
+    JsonParser.SourceFile sourceFile = mock(JsonParser.SourceFile.class);
 
     when(parser.parse()).thenReturn(Collections.singletonList(sourceFile));
     sensor.importReport(parser, locator, importer);

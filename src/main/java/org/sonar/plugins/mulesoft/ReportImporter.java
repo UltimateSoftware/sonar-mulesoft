@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.jacoco;
+package org.sonar.plugins.mulesoft;
 
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -30,11 +30,11 @@ public class ReportImporter {
     this.ctx = ctx;
   }
 
-  public void importCoverage(XmlReportParser.SourceFile sourceFile, InputFile inputFile) {
+  public void importCoverage(JsonParser.SourceFile sourceFile, InputFile inputFile) {
     NewCoverage newCoverage = ctx.newCoverage()
       .onFile(inputFile);
 
-    for (XmlReportParser.Line line : sourceFile.lines()) {
+    for (JsonParser.Line line : sourceFile.lines()) {
       boolean conditions = false;
       if (line.coveredBranches() > 0 || line.missedBranches() > 0) {
         int branches = line.coveredBranches() + line.missedBranches();

@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.jacoco;
+package org.sonar.plugins.mulesoft;
 
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class JacocoPluginTest {
-  private JacocoPlugin plugin = new JacocoPlugin();
+  private MulesoftPlugin plugin = new MulesoftPlugin();
   private Plugin.Context ctx = mock(Plugin.Context.class);
   @Test
   public void should_add_sensor() {
@@ -42,7 +42,7 @@ public class JacocoPluginTest {
     verify(ctx, times(2)).addExtension(arg.capture());
     verifyNoMoreInteractions(ctx);
 
-    assertThat(arg.getAllValues().get(0)).isEqualTo(JacocoSensor.class);
+    assertThat(arg.getAllValues().get(0)).isEqualTo(MulesoftSensor.class);
     assertThat(arg.getAllValues().get(1)).isInstanceOf(PropertyDefinition.class);
     PropertyDefinition propertyDefinition = (PropertyDefinition) arg.getAllValues().get(1);
     assertThat(propertyDefinition.key()).isEqualTo("sonar.coverage.jacoco.xmlReportPaths");

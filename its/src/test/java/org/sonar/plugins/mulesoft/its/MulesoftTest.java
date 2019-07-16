@@ -1,4 +1,4 @@
-package org.sonar.plugins.jacoco.its;
+package org.sonar.plugins.mulesoft.its;
 
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.OrchestratorBuilder;
@@ -32,10 +32,10 @@ import org.sonarqube.ws.client.measure.ComponentWsRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JacocoTest {
-  private final static String PROJECT_KEY = "jacoco-test-project";
-  private static final String FILE_KEY = "jacoco-test-project:src/main/java/org/sonarsource/test/Calc.java";
-  private static final String FILE_WITHOUT_COVERAGE_KEY = "jacoco-test-project:src/main/java/org/sonarsource/test/CalcNoCoverage.java";
+public class MulesoftTest {
+  private final static String PROJECT_KEY = "mulesoft-project";
+  private static final String FILE_KEY = "mulesoft-project:mule-integration-peopledoc-demographic-information.xml";
+  private static final String FILE_WITHOUT_COVERAGE_KEY = "mulesoft-project:mule-integration-peopledoc-demographic-information.xml";
 
   @ClassRule
   public static Orchestrator orchestrator;
@@ -49,16 +49,16 @@ public class JacocoTest {
       .setOrchestratorProperty("orchestrator.workspaceDir", "build")
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", defaultRuntimeVersion));
 
-    String pluginVersion = System.getProperty("jacocoVersion");
+    String pluginVersion = System.getProperty("mulesoftVersion");
     Location pluginLocation;
     if (StringUtils.isEmpty(pluginVersion) || pluginVersion.endsWith("-SNAPSHOT")) {
-      pluginLocation = FileLocation.byWildcardMavenFilename(new File("../build/libs"), "sonar-jacoco-*.jar");
+      pluginLocation = FileLocation.byWildcardMavenFilename(new File("../build/libs"), "sonar-mulesoft-*.jar");
     } else {
-      pluginLocation = MavenLocation.of("org.sonarsource.jacoco", "sonar-jacoco-plugin", pluginVersion);
+      pluginLocation = MavenLocation.of("org.sonarsource.mulesoft", "sonar-mulesoft-plugin", pluginVersion);
     }
     builder.addPlugin(pluginLocation);
     try {
-      builder.addPlugin(URLLocation.create(new URL("https://binaries.sonarsource.com/Distribution/sonar-java-plugin/sonar-java-plugin-5.6.0.15032.jar")));
+      builder.addPlugin(URLLocation.create(new URL("https://binaries.sonarsource.com/Distribution/sonar-xml-plugin/sonar-xml-plugin-2.0.1.2020.jar")));
     } catch (MalformedURLException e) {
       throw new IllegalStateException("Failed to download plugin", e);
     }
@@ -70,28 +70,11 @@ public class JacocoTest {
     SonarScanner build = SonarScanner.create()
       .setProjectKey(PROJECT_KEY)
       .setDebugLogs(true)
-      .setSourceDirs("src/main")
-      .setTestDirs("src/test")
-      .setProperty("sonar.coverage.jacoco.xmlReportPaths", "jacoco.xml")
+      .setSourceDirs("mulesoft")
+      .setTestDirs("mule-soft-project")
+      .setProperty("sonar.coverage.mulesoft.jsonReportPaths", "munit-coverage.json.json")
       .setProperty("sonar.java.binaries", ".")
-      .setProjectDir(prepareProject("simple-project-jacoco"));
-    orchestrator.executeBuild(build);
-
-    checkCoveredFile();
-    checkUncoveredFile();
-  }
-
-  @Test
-  public void should_import_coverage_even_when_java_also_imports() throws IOException {
-    SonarScanner build = SonarScanner.create()
-      .setProjectKey(PROJECT_KEY)
-      .setDebugLogs(true)
-      .setSourceDirs("src/main")
-      .setTestDirs("src/test")
-      .setProperty("sonar.coverage.jacoco.xmlReportPaths", "jacoco.xml")
-      .setProperty("sonar.jacoco.reportPath", "jacoco.exec")
-      .setProperty("sonar.java.binaries", ".")
-      .setProjectDir(prepareProject("simple-project-jacoco"));
+      .setProjectDir(prepareProject("project"));
     orchestrator.executeBuild(build);
 
     checkCoveredFile();
@@ -103,11 +86,11 @@ public class JacocoTest {
     SonarScanner build = SonarScanner.create()
       .setProjectKey(PROJECT_KEY)
       .setDebugLogs(true)
-      .setSourceDirs("src/main")
-      .setTestDirs("src/test")
-      .setProperty("sonar.coverage.jacoco.xmlReportPaths", "invalid_file.xml")
+            .setSourceDirs("mulesoft")
+            .setTestDirs("mule-soft-project")
+      .setProperty("sonar.coverage.mulesoft.jsonReportPaths", "invalid.json")
       .setProperty("sonar.java.binaries", ".")
-      .setProjectDir(prepareProject("simple-project-jacoco"));
+      .setProjectDir(prepareProject("project"));
     BuildResult result = orchestrator.executeBuild(build);
     result.getLogs().contains("Report doesn't exist: ");
   }
@@ -117,12 +100,12 @@ public class JacocoTest {
     SonarScanner build = SonarScanner.create()
       .setProjectKey(PROJECT_KEY)
       .setDebugLogs(true)
-      .setSourceDirs("src/main")
-      .setTestDirs("src/test")
+            .setSourceDirs("mulesoft")
+            .setTestDirs("mule-soft-project")
       .setProperty("sonar.java.binaries", ".")
-      .setProjectDir(prepareProject("simple-project-jacoco"));
+      .setProjectDir(prepareProject("project"));
     orchestrator.executeBuild(build);
-    checkNoJacocoCoverage();
+    checkNoMulesoftCoverage();
   }
 
   @Test
@@ -130,43 +113,19 @@ public class JacocoTest {
     SonarScanner build = SonarScanner.create()
       .setProjectKey(PROJECT_KEY)
       .setDebugLogs(true)
-      .setSourceDirs("src/main")
-      .setTestDirs("src/test")
+            .setSourceDirs("mulesoft")
+            .setTestDirs("mule-soft-project")
+      .setProperty("sonar.coverage.mulesoft.jsonReportPaths", "invalid-sources.json")
       .setProperty("sonar.java.binaries", ".")
-      .setProperty("sonar.coverage.jacoco.xmlReportPaths", "jacoco-with-invalid-sources.xml")
-      .setProjectDir(prepareProject("simple-project-jacoco"));
+      .setProjectDir(prepareProject("project"));
     orchestrator.executeBuild(build);
-    checkNoJacocoCoverage();
+    checkNoMulesoftCoverage();
   }
 
-  @Test
-  public void no_failure_with_invalid_reports() throws IOException {
-    SonarScanner build = SonarScanner.create()
-      .setProjectKey(PROJECT_KEY)
-      .setDebugLogs(true)
-      .setSourceDirs("src/main")
-      .setTestDirs("src/test")
-      .setProperty("sonar.java.binaries", ".")
-      .setProperty("sonar.coverage.jacoco.xmlReportPaths", "jacoco-with-invalid-lines.xml,jacoco-with-invalid-format.xml")
-      .setProjectDir(prepareProject("simple-project-jacoco"));
-    orchestrator.executeBuild(build);
-    checkCoveredFile();
-
-    // No coverage info from JaCoCo for second file
-    Map<String, Double> measures = getCoverageMeasures(FILE_WITHOUT_COVERAGE_KEY);
-    assertThat(measures.get("line_coverage")).isEqualTo(0.0);
-    assertThat(measures.get("lines_to_cover")).isEqualTo(6);
-    assertThat(measures.get("uncovered_lines")).isEqualTo(6.0);
-    assertThat(measures.get("branch_coverage")).isNull();
-    assertThat(measures.get("conditions_to_cover")).isNull();
-    assertThat(measures.get("uncovered_conditions")).isNull();
-    assertThat(measures.get("coverage")).isEqualTo(0.0);
-  }
-
-  private void checkNoJacocoCoverage() {
+  private void checkNoMulesoftCoverage() {
     Map<String, Double> measures = getCoverageMeasures(FILE_KEY);
     assertThat(measures.get("line_coverage")).isEqualTo(0.0);
-    // java doesn't consider the declaration of the constructor as executable line, so less one than with jacoco
+    // java doesn't consider the declaration of the constructor as executable line, so less one than with mulesoft
     assertThat(measures.get("lines_to_cover")).isEqualTo(10.0);
     assertThat(measures.get("uncovered_lines")).isEqualTo(10.0);
     assertThat(measures.get("branch_coverage")).isNull();

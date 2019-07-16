@@ -52,7 +52,7 @@ allprojects {
 sonarqube {
     properties {
         property 'sonar.projectName', projectTitle
-        property 'sonar.projectKey', project.group + ':sonar-jacoco'
+        property 'sonar.projectKey', project.group + ':sonar-mulesoft'
     }
 }
 
@@ -64,6 +64,9 @@ jacocoTestReport {
 }
 
 dependencies {
+    compile 'com.fasterxml.jackson.core:jackson-core:2.4.1'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.4.1'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.4.1'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'org.assertj:assertj-core:3.10.0'
@@ -98,16 +101,16 @@ jar {
                 'Implementation-Build': 'git rev-parse HEAD'.execute().text.trim(),
                 'Plugin-BuildDate': buildDate,
                 'Plugin-ChildFirstClassLoader': 'false',
-                'Plugin-Class': 'org.sonar.plugins.jacoco.JacocoPlugin',
-                'Plugin-Description': 'JaCoCo XML report importer',
+                'Plugin-Class': 'org.sonar.plugins.mulesoft.MulesoftPlugin',
+                'Plugin-Description': 'MuleSoft JSON report importer',
                 'Plugin-Display-Version': displayVersion,
-                'Plugin-IssueTrackerUrl': 'https://jira.sonarsource.com/browse/JACOCO',
-                'Plugin-Key': 'jacoco',
+                'Plugin-IssueTrackerUrl': 'https://jira.sonarsource.com/browse/MULESOFT',
+                'Plugin-Key': 'mulesoft',
                 'Plugin-License': 'GNU LGPL 3',
-                'Plugin-Name': 'JaCoCo',
+                'Plugin-Name': 'Mulesoft',
                 'Plugin-Organization': 'SonarSource',
                 'Plugin-OrganizationUrl': 'http://www.sonarsource.com',
-                'Plugin-SourcesUrl': 'https://github.com/SonarSource/sonar-jacoco',
+                'Plugin-SourcesUrl': 'https://github.com/SonarSource/sonar-mulesoft',
                 'Plugin-Version': version,
                 'Sonar-Version': '6.7',
                 'SonarLint-Supported': 'false',
@@ -149,7 +152,7 @@ artifactory {
         }
         defaults {
             properties = [
-                'build.name': 'sonar-jacoco',
+                'build.name': 'sonar-mulesoft',
                 'build.number': (System.getenv('BUILD_ID') ?: System.getenv('BUILD_NUMBER')),
                 'pr.branch.target': System.getenv('PULL_REQUEST_BRANCH_TARGET'),
                 'pr.number': System.getenv('PULL_REQUEST_NUMBER'),
@@ -163,10 +166,10 @@ artifactory {
         }
     }
 
-    clientConfig.info.setBuildName('sonar-jacoco')
+    clientConfig.info.setBuildName('sonar-mulesoft')
     clientConfig.info.setBuildNumber(System.getenv('BUILD_NUMBER'))
     // Define the artifacts to be deployed to https://binaries.sonarsource.com on releases
-    clientConfig.info.addEnvironmentProperty('ARTIFACTS_TO_PUBLISH', "${project.group}:sonar-jacoco-plugin:jar")
+    clientConfig.info.addEnvironmentProperty('ARTIFACTS_TO_PUBLISH', "${project.group}:sonar-mulesoft-plugin:jar")
     // The name of this variable is important because it's used by the delivery process when extracting version from Artifactory build info.
     clientConfig.info.addEnvironmentProperty('PROJECT_VERSION', "${version}")
 

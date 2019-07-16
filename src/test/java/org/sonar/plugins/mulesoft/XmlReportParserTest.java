@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.jacoco;
+package org.sonar.plugins.mulesoft;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -45,8 +45,8 @@ public class XmlReportParserTest {
   @Test
   public void should_parse_all_items_in_report() throws URISyntaxException {
     Path sample = load("jacoco.xml");
-    XmlReportParser report = new XmlReportParser(sample);
-    List<XmlReportParser.SourceFile> sourceFiles = report.parse();
+    JsonParser report = new JsonParser(sample);
+    List<JsonParser.SourceFile> sourceFiles = report.parse();
 
     assertThat(sourceFiles).hasSize(36);
     assertThat(sourceFiles.stream().mapToInt(sf -> sf.lines().size()).sum()).isEqualTo(1321);
@@ -55,8 +55,8 @@ public class XmlReportParserTest {
   @Test
   public void should_parse_all_attributes() throws URISyntaxException {
     Path sample = load("simple.xml");
-    XmlReportParser report = new XmlReportParser(sample);
-    List<XmlReportParser.SourceFile> sourceFiles = report.parse();
+    JsonParser report = new JsonParser(sample);
+    List<JsonParser.SourceFile> sourceFiles = report.parse();
 
     assertThat(sourceFiles).hasSize(1);
     assertThat(sourceFiles.stream().mapToInt(sf -> sf.lines().size()).sum()).isEqualTo(1);
@@ -72,8 +72,8 @@ public class XmlReportParserTest {
   @Test
   public void should_treat_missing_mi_ci_mb_cb_in_line_as_zeros() throws Exception {
     Path sample = load("line_without_mi_ci_mb_cb.xml");
-    XmlReportParser report = new XmlReportParser(sample);
-    List<XmlReportParser.SourceFile> sourceFiles = report.parse();
+    JsonParser report = new JsonParser(sample);
+    List<JsonParser.SourceFile> sourceFiles = report.parse();
 
     assertThat(sourceFiles).hasSize(1);
     assertThat(sourceFiles.stream().mapToInt(sf -> sf.lines().size()).sum()).isEqualTo(1);
@@ -89,7 +89,7 @@ public class XmlReportParserTest {
   @Test
   public void should_fail_if_report_is_not_xml() throws IOException {
     Path filePath = temp.newFile("report.xml").toPath();
-    XmlReportParser report = new XmlReportParser(filePath);
+    JsonParser report = new JsonParser(filePath);
 
     exception.expect(IllegalStateException.class);
     exception.expectMessage("Failed to parse JaCoCo XML report: " + filePath.toAbsolutePath());
@@ -99,7 +99,7 @@ public class XmlReportParserTest {
   @Test
   public void should_fail_if_name_missing_in_package() throws URISyntaxException {
     Path sample = load("name_missing_in_package.xml");
-    XmlReportParser report = new XmlReportParser(sample);
+    JsonParser report = new JsonParser(sample);
 
     exception.expect(IllegalStateException.class);
     exception.expectMessage("Invalid report: couldn't find the attribute 'name' for a 'package' at line 4 column 14");
@@ -109,7 +109,7 @@ public class XmlReportParserTest {
   @Test
   public void should_fail_if_name_missing_in_sourcefile() throws URISyntaxException {
     Path sample = load("name_missing_in_sourcefile.xml");
-    XmlReportParser report = new XmlReportParser(sample);
+    JsonParser report = new JsonParser(sample);
 
     exception.expect(IllegalStateException.class);
     exception.expectMessage("Invalid report: couldn't find the attribute 'name' for a sourcefile at line 5 column 21");
@@ -119,7 +119,7 @@ public class XmlReportParserTest {
   @Test
   public void should_fail_if_line_not_within_sourcefile() throws URISyntaxException {
     Path sample = load("line_not_within_sourcefile.xml");
-    XmlReportParser report = new XmlReportParser(sample);
+    JsonParser report = new JsonParser(sample);
 
     exception.expect(IllegalStateException.class);
     exception.expectMessage( "Invalid report: expected to find 'line' within a 'sourcefile' at line 5 column 52");
@@ -129,7 +129,7 @@ public class XmlReportParserTest {
   @Test
   public void should_fail_if_sourcefile_not_within_package() throws URISyntaxException {
     Path sample = load("sourcefile_not_within_package.xml");
-    XmlReportParser report = new XmlReportParser(sample);
+    JsonParser report = new JsonParser(sample);
 
     exception.expect(IllegalStateException.class);
     exception.expectMessage( "Invalid report: expected to find 'sourcefile' within a 'package' at line 4 column 17");
@@ -139,7 +139,7 @@ public class XmlReportParserTest {
   @Test
   public void should_fail_if_ci_is_invalid_in_line() throws URISyntaxException {
     Path sample = load("invalid_ci_in_line.xml");
-    XmlReportParser report = new XmlReportParser(sample);
+    JsonParser report = new JsonParser(sample);
 
     exception.expect(IllegalStateException.class);
     exception.expectMessage("Invalid report: failed to parse integer from the attribute 'ci' for the sourcefile 'File.java' at line 6 column 61");
@@ -149,7 +149,7 @@ public class XmlReportParserTest {
   @Test
   public void should_fail_if_nr_is_invalid_in_line() throws URISyntaxException {
     Path sample = load("invalid_nr_in_line.xml");
-    XmlReportParser report = new XmlReportParser(sample);
+    JsonParser report = new JsonParser(sample);
 
     exception.expect(IllegalStateException.class);
     exception.expectMessage("Invalid report: failed to parse integer from the attribute 'nr' for the sourcefile 'File.java' at line 6 column 31");
@@ -159,7 +159,7 @@ public class XmlReportParserTest {
   @Test
   public void should_fail_if_nr_missing_in_line() throws URISyntaxException {
     Path sample = load("nr_missing_in_line.xml");
-    XmlReportParser report = new XmlReportParser(sample);
+    JsonParser report = new JsonParser(sample);
 
     exception.expect(IllegalStateException.class);
     exception.expectMessage("Invalid report: couldn't find the attribute 'nr' for the sourcefile 'File.java' at line 6 column 21");
@@ -169,8 +169,8 @@ public class XmlReportParserTest {
   @Test
   public void should_import_kotlin_report() throws URISyntaxException {
     Path sample = load("kotlin.xml");
-    XmlReportParser report = new XmlReportParser(sample);
-    List<XmlReportParser.SourceFile> sourceFiles = report.parse();
+    JsonParser report = new JsonParser(sample);
+    List<JsonParser.SourceFile> sourceFiles = report.parse();
 
     assertThat(sourceFiles).hasSize(5);
     assertThat(sourceFiles.stream().mapToInt(sf -> sf.lines().size()).sum()).isEqualTo(79);

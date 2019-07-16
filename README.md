@@ -1,4 +1,4 @@
-# SonarQube JaCoCo Plugin
+# SonarQube Mulesoft Plugin
 
 [![Build Status](https://travis-ci.org/SonarSource/sonar-jacoco.svg?branch=master)](https://travis-ci.org/SonarSource/sonar-jacoco)
 [![Quality gate](https://next.sonarqube.com/sonarqube/api/project_badges/measure?project=org.sonarsource.jacoco%3Asonar-jacoco&metric=alert_status)](https://next.sonarqube.com/sonarqube/dashboard?id=org.sonarsource.jacoco%3Asonar-jacoco)

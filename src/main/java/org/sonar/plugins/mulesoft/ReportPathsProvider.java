@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.jacoco;
+package org.sonar.plugins.mulesoft;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,8 +29,8 @@ import java.util.stream.Stream;
 import org.sonar.api.batch.sensor.SensorContext;
 
 class ReportPathsProvider {
-  private static final String[] DEFAULT_PATHS = {"target/site/jacoco/jacoco.xml", "build/reports/jacoco/test/jacocoTestReport.xml"};
-  static final String REPORT_PATHS_PROPERTY_KEY = "sonar.coverage.jacoco.xmlReportPaths";
+  private static final String[] DEFAULT_PATHS = {"MuleSoftReport/munit-coverage.json", "report/munit-coverage.json"};
+  static final String REPORT_PATHS_PROPERTY_KEY = "sonar.coverage.mulesoft.jsonReportPaths";
 
   private final SensorContext context;
 

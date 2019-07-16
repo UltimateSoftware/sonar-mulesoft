@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.jacoco;
+package org.sonar.plugins.mulesoft;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,10 +49,10 @@ public class ReportImporterTest {
     InputFile inputFile = TestInputFileBuilder.create("module", "filePath")
       .setLines(10)
       .build();
-    XmlReportParser.SourceFile sourceFile = new XmlReportParser.SourceFile("package", "name");
-    sourceFile.lines().add(new XmlReportParser.Line(1, 0, 0, 1, 1));
-    sourceFile.lines().add(new XmlReportParser.Line(2, 1, 2, 0, 0));
-    sourceFile.lines().add(new XmlReportParser.Line(3, 2, 0, 0, 0));
+    JsonParser.SourceFile sourceFile = new JsonParser.SourceFile("package", "name");
+    sourceFile.lines().add(new JsonParser.Line(1, 0, 0, 1, 1));
+    sourceFile.lines().add(new JsonParser.Line(2, 1, 2, 0, 0));
+    sourceFile.lines().add(new JsonParser.Line(3, 2, 0, 0, 0));
 
     importer.importCoverage(sourceFile, inputFile);
 

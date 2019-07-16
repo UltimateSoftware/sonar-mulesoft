@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.jacoco;
+package org.sonar.plugins.mulesoft;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,12 +30,12 @@ import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
-public class JacocoSensor implements Sensor {
-  private static final Logger LOG = Loggers.get(JacocoSensor.class);
+public class MulesoftSensor implements Sensor {
+  private static final Logger LOG = Loggers.get(MulesoftSensor.class);
 
   @Override
   public void describe(SensorDescriptor descriptor) {
-    descriptor.name("JaCoCo XML Report Importer");
+    descriptor.name("MuleSoft JSON Report Importer");
   }
 
   @Override
@@ -61,7 +61,7 @@ public class JacocoSensor implements Sensor {
       } else {
         LOG.debug("Reading report '{}'", reportPath);
         try {
-          importReport(new XmlReportParser(reportPath), locator, importer);
+          importReport(new JsonParser(reportPath), locator, importer);
         } catch (Exception e) {
           LOG.error("Coverage report '{}' could not be read/imported. Error: {}", reportPath, e);
         }
@@ -69,10 +69,10 @@ public class JacocoSensor implements Sensor {
     }
   }
 
-  void importReport(XmlReportParser reportParser, FileLocator locator, ReportImporter importer) {
-    List<XmlReportParser.SourceFile> sourceFiles = reportParser.parse();
+  void importReport(JsonParser reportParser, FileLocator locator, ReportImporter importer) {
+    List<JsonParser.SourceFile> sourceFiles = reportParser.parse();
 
-    for (XmlReportParser.SourceFile sourceFile : sourceFiles) {
+    for (JsonParser.SourceFile sourceFile : sourceFiles) {
       InputFile inputFile = locator.getInputFile(sourceFile.packageName(), sourceFile.name());
       if (inputFile == null) {
         continue;
