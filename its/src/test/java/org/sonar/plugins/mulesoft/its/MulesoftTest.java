@@ -24,6 +24,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.mockito.internal.exceptions.ExceptionIncludingMockitoWarnings;
 import org.sonarqube.ws.WsMeasures;
 import org.sonarqube.ws.client.HttpConnector;
 import org.sonarqube.ws.client.WsClient;
@@ -34,8 +35,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class MulesoftTest {
   private final static String PROJECT_KEY = "mulesoft-project";
-  private static final String FILE_KEY = "mulesoft-project:mule-integration-peopledoc-demographic-information.xml";
-  private static final String FILE_WITHOUT_COVERAGE_KEY = "mulesoft-project:mule-integration-peopledoc-demographic-information.xml";
+  private static final String FILE_KEY = "mulesoft-project:mulesoft/mule-integration-peopledoc-demographic-information.xml";
+  private static final String FILE_WITHOUT_COVERAGE_KEY = "mulesoft-project:mulesoft/mule-integration-peopledoc-demographic-information.xml";
 
   @ClassRule
   public static Orchestrator orchestrator;
@@ -50,12 +51,7 @@ public class MulesoftTest {
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", defaultRuntimeVersion));
 
     String pluginVersion = System.getProperty("mulesoftVersion");
-    Location pluginLocation;
-    if (StringUtils.isEmpty(pluginVersion) || pluginVersion.endsWith("-SNAPSHOT")) {
-      pluginLocation = FileLocation.byWildcardMavenFilename(new File("../build/libs"), "sonar-mulesoft-*.jar");
-    } else {
-      pluginLocation = MavenLocation.of("org.sonarsource.mulesoft", "sonar-mulesoft-plugin", pluginVersion);
-    }
+    Location pluginLocation = FileLocation.byWildcardMavenFilename(new File("../build/libs"), "sonar-mulesoft-*.jar");
     builder.addPlugin(pluginLocation);
     try {
       builder.addPlugin(URLLocation.create(new URL("https://binaries.sonarsource.com/Distribution/sonar-xml-plugin/sonar-xml-plugin-2.0.1.2020.jar")));
