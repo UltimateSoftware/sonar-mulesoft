@@ -73,7 +73,7 @@ public class MulesoftSensor implements Sensor {
     List<JsonParser.SourceFile> sourceFiles = reportParser.parse();
 
     for (JsonParser.SourceFile sourceFile : sourceFiles) {
-      InputFile inputFile = locator.getInputFile(sourceFile.packageName(), sourceFile.name());
+      InputFile inputFile = locator.getInputFile(sourceFile.name());
       if (inputFile == null) {
         continue;
       }

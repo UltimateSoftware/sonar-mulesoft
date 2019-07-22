@@ -20,8 +20,11 @@
 package org.sonar.plugins.mulesoft;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.sonar.plugins.mulesoft.models.Flow;
+import org.sonar.plugins.mulesoft.models.MunitFile;
+import org.sonar.plugins.mulesoft.models.MunitReport;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -48,15 +51,24 @@ public class JsonParser {
             //convert json string to object
             MunitReport mur = objectMapper.readValue(jsonData, MunitReport.class);
 
-            for (MunitReport.MunitFile file : mur.getFiles()) {
-                SourceFile sourceFile = new SourceFile(null, file.getName());
-                for(int i = 0; i < file.getFlows().size(); i++) {
-                    MunitReport.Flow flow = file.getFlows().get(i);
+            for (MunitFile file : mur.getFiles()) {
+                BufferedReader reader = new BufferedReader(new FileReader(this.jsonReportPath.getParent().getParent().toString() + "/mulesoft/" + file.getName()));
+                int lines = 0;
+                while (reader.readLine() != null) lines++;
+                reader.close();
+                SourceFile sourceFile = new SourceFile("", file.getName());
+                lines = 0;
+                int covered = 0;
+                for(Flow flow: file.getFlows()) {
+                    lines += flow.getMessageProcessorCount();
+                    covered += flow.getCoveredProcessorCount();
+                }
+                for(int i = 1; i <= lines; i++) {
                     sourceFile.lines().add(
                         new Line(
                             i,
-                            flow.getMessageProcessorCount() - flow.getCoveredProcessorCount(),
-                            flow.getCoveredProcessorCount(),
+                            1,
+                            i > covered ? 0 : 1,
                             0,
                             0
                             ));
@@ -69,35 +81,6 @@ public class JsonParser {
         }
 
         return sourceFiles;
-    }
-
-    private static String getStringAttr(XMLStreamReader parser, String name, Supplier<String> errorContext) {
-        String value = parser.getAttributeValue(null, name);
-        if (value == null) {
-            throw new IllegalStateException("Invalid report: couldn't find the attribute '" + name + "' " + errorContext.get());
-        }
-        return value;
-    }
-
-    private static int getOptionalIntAttr(XMLStreamReader parser, String name, Supplier<String> errorContext) {
-        String value = parser.getAttributeValue(null, name);
-        if (value == null) {
-            return 0;
-        }
-        try {
-            return Integer.parseInt(value);
-        } catch (Exception e) {
-            throw new IllegalStateException("Invalid report: failed to parse integer from the attribute '" + name + "' " + errorContext.get());
-        }
-    }
-
-    private static int getIntAttr(XMLStreamReader parser, String name, Supplier<String> errorContext) {
-        String value = getStringAttr(parser, name, errorContext);
-        try {
-            return Integer.parseInt(value);
-        } catch (Exception e) {
-            throw new IllegalStateException("Invalid report: failed to parse integer from the attribute '" + name + "' " + errorContext.get());
-        }
     }
 
     static class SourceFile {
