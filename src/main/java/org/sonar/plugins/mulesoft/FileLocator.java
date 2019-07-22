@@ -40,9 +40,8 @@ public class FileLocator {
   }
 
   @CheckForNull
-  public InputFile getInputFile(String packagePath, String fileName) {
-    String filePath = packagePath + "/" + fileName;
-    String[] path = filePath.split("/");
+  public InputFile getInputFile(String fileName) {
+    String[] path = fileName.split("/");
     return tree.getFileWithSuffix(path);
   }
 }

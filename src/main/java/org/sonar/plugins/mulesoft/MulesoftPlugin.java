@@ -22,6 +22,10 @@ package org.sonar.plugins.mulesoft;
 import org.sonar.api.Plugin;
 import org.sonar.api.config.PropertyDefinition;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class MulesoftPlugin implements Plugin {
   @Override
   public void define(Context context) {

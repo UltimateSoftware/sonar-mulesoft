@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MulesoftTest {
   private final static String PROJECT_KEY = "mulesoft-project";
   private static final String FILE_KEY = "mulesoft-project:mulesoft/mule-integration-peopledoc-demographic-information.xml";
-  private static final String FILE_WITHOUT_COVERAGE_KEY = "mulesoft-project:mulesoft/mule-integration-peopledoc-demographic-information.xml";
+  private static final String FILE_WITHOUT_COVERAGE_KEY = "mulesoft-project:mulesoft/peopledoc-integration-message-processor.xml";
 
   @ClassRule
   public static Orchestrator orchestrator;
@@ -50,7 +50,6 @@ public class MulesoftTest {
       .setOrchestratorProperty("orchestrator.workspaceDir", "build")
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", defaultRuntimeVersion));
 
-    String pluginVersion = System.getProperty("mulesoftVersion");
     Location pluginLocation = FileLocation.byWildcardMavenFilename(new File("../build/libs"), "sonar-mulesoft-*.jar");
     builder.addPlugin(pluginLocation);
     try {
@@ -68,7 +67,7 @@ public class MulesoftTest {
       .setDebugLogs(true)
       .setSourceDirs("mulesoft")
       .setTestDirs("mule-soft-project")
-      .setProperty("sonar.coverage.mulesoft.jsonReportPaths", "munit-coverage.json.json")
+      .setProperty("sonar.coverage.mulesoft.jsonReportPaths", "mule-soft-project/munit-coverage.json")
       .setProperty("sonar.java.binaries", ".")
       .setProjectDir(prepareProject("project"));
     orchestrator.executeBuild(build);
@@ -120,36 +119,35 @@ public class MulesoftTest {
 
   private void checkNoMulesoftCoverage() {
     Map<String, Double> measures = getCoverageMeasures(FILE_KEY);
+    assertThat(measures.get("line_coverage")).isNull();
+    assertThat(measures.get("lines_to_cover")).isNull();
+    assertThat(measures.get("uncovered_lines")).isNull();
+    assertThat(measures.get("branch_coverage")).isNull();
+    assertThat(measures.get("conditions_to_cover")).isNull();
+    assertThat(measures.get("uncovered_conditions")).isNull();
+    assertThat(measures.get("coverage")).isNull();
+  }
+
+  private void checkUncoveredFile() {
+    Map<String, Double> measures = getCoverageMeasures(FILE_WITHOUT_COVERAGE_KEY);
     assertThat(measures.get("line_coverage")).isEqualTo(0.0);
-    // java doesn't consider the declaration of the constructor as executable line, so less one than with mulesoft
-    assertThat(measures.get("lines_to_cover")).isEqualTo(10.0);
-    assertThat(measures.get("uncovered_lines")).isEqualTo(10.0);
+    assertThat(measures.get("lines_to_cover")).isEqualTo(13.0);
+    assertThat(measures.get("uncovered_lines")).isEqualTo(13.0);
     assertThat(measures.get("branch_coverage")).isNull();
     assertThat(measures.get("conditions_to_cover")).isNull();
     assertThat(measures.get("uncovered_conditions")).isNull();
     assertThat(measures.get("coverage")).isEqualTo(0.0);
   }
 
-  private void checkUncoveredFile() {
-    Map<String, Double> measures = getCoverageMeasures(FILE_WITHOUT_COVERAGE_KEY);
-    assertThat(measures.get("line_coverage")).isEqualTo(0.0);
-    assertThat(measures.get("lines_to_cover")).isEqualTo(7.0);
-    assertThat(measures.get("uncovered_lines")).isEqualTo(7.0);
-    assertThat(measures.get("branch_coverage")).isEqualTo(0.0);
-    assertThat(measures.get("conditions_to_cover")).isEqualTo(2.0);
-    assertThat(measures.get("uncovered_conditions")).isEqualTo(2.0);
-    assertThat(measures.get("coverage")).isEqualTo(0.0);
-  }
-
   private void checkCoveredFile() {
     Map<String, Double> measures = getCoverageMeasures(FILE_KEY);
-    assertThat(measures.get("line_coverage")).isEqualTo(90.9);
-    assertThat(measures.get("lines_to_cover")).isEqualTo(11.0);
-    assertThat(measures.get("uncovered_lines")).isEqualTo(1.0);
-    assertThat(measures.get("branch_coverage")).isEqualTo(75.0);
-    assertThat(measures.get("conditions_to_cover")).isEqualTo(4.0);
-    assertThat(measures.get("uncovered_conditions")).isEqualTo(1.0);
-    assertThat(measures.get("coverage")).isEqualTo(86.7);
+    assertThat(measures.get("line_coverage")).isEqualTo(85.7);
+    assertThat(measures.get("lines_to_cover")).isEqualTo(28.0);
+    assertThat(measures.get("uncovered_lines")).isEqualTo(4.0);
+    assertThat(measures.get("branch_coverage")).isNull();
+    assertThat(measures.get("conditions_to_cover")).isNull();
+    assertThat(measures.get("uncovered_conditions")).isNull();
+    assertThat(measures.get("coverage")).isEqualTo(85.7);
   }
 
   private Map<String, Double> getCoverageMeasures(String fileKey) {

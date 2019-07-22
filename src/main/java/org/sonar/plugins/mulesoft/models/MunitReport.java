@@ -1,19 +1,22 @@
 package org.sonar.plugins.mulesoft;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MunitReport {
     private double coverage;
     private int floatCount;
     private int processorCount;
-    private int coveredPRocessorCount;
+    private int coveredProcessorCount;
     private List<MunitFile> files;
 
     public MunitReport(double coverage, int floatCount, int processorCount, int coveredPRocessorCount, List<MunitFile> files) {
         this.coverage = coverage;
         this.floatCount = floatCount;
         this.processorCount = processorCount;
-        this.coveredPRocessorCount = coveredPRocessorCount;
+        this.coveredProcessorCount = coveredPRocessorCount;
         this.files = files;
     }
 
@@ -32,8 +35,8 @@ public class MunitReport {
         return processorCount;
     }
 
-    public int getCoveredPRocessorCount() {
-        return coveredPRocessorCount;
+    public int getCoveredProcessorCount() {
+        return coveredProcessorCount;
     }
 
     public List<MunitFile> getFiles() {
@@ -52,23 +55,26 @@ public class MunitReport {
         this.processorCount = processorCount;
     }
 
-    public void setCoveredPRocessorCount(int coveredPRocessorCount) {
-        this.coveredPRocessorCount = coveredPRocessorCount;
+    public void setCoveredProcessorCount(int coveredProcessorCount) {
+        this.coveredProcessorCount = coveredProcessorCount;
     }
 
     public void setFiles(List<MunitFile> files) {
         this.files = files;
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public class MunitFile {
         private String name;
         private int flowCount;
+        private double coverage;
         private int processorCount;
         private double weight;
         private List<Flow> flows;
 
-        public MunitFile(String name, int flowCount, int processorCount, double weight, List<Flow> flows) {
+        public MunitFile(String name, double coverage, int flowCount, int processorCount, double weight, List<Flow> flows) {
             this.name = name;
+            this.coverage = coverage;
             this.flowCount = flowCount;
             this.processorCount = processorCount;
             this.weight = weight;
@@ -76,6 +82,14 @@ public class MunitReport {
         }
 
         public MunitFile() {
+        }
+
+        public double getCoverage() {
+            return coverage;
+        }
+
+        public void setCoverage(double coverage) {
+            this.coverage = coverage;
         }
 
         public String getName() {
@@ -119,6 +133,7 @@ public class MunitReport {
         }
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public class Flow {
         private String name;
         private String type;
