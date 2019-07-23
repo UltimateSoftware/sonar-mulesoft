@@ -102,7 +102,7 @@ jar {
                 'Implementation-Build': 'git rev-parse HEAD'.execute().text.trim(),
                 'Plugin-BuildDate': buildDate,
                 'Plugin-ChildFirstClassLoader': 'false',
-                'Plugin-Class': 'org.sonar.plugins.mulesoft.MulesoftPlugin',
+                'Plugin-Class': 'com.ultimatesoftware.sonar.plugins.mulesoft.MulesoftPlugin',
                 'Plugin-Description': 'MuleSoft JSON report importer',
                 'Plugin-Display-Version': displayVersion,
                 'Plugin-IssueTrackerUrl': 'https://jira.sonarsource.com/browse/MULESOFT',
