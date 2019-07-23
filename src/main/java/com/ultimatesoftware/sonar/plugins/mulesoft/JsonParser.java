@@ -30,7 +30,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class JsonParser {
     private final Path jsonReportPath;
@@ -51,32 +50,25 @@ public class JsonParser {
             MunitReport mur = objectMapper.readValue(jsonData, MunitReport.class);
 
             for (MunitFile file : mur.getFiles()) {
-                BufferedReader reader = new BufferedReader(new FileReader(this.jsonReportPath.getParent().getParent().toString() + "/mulesoft/" + file.getName()));
-                List<String> lines = reader.lines().collect(Collectors.toList());
-                reader.close();
                 SourceFile sourceFile = new SourceFile("", file.getName());
                 int numOfLines = 0;
                 int covered = 0;
-                for(Flow flow: file.getFlows()) {
+                for (Flow flow : file.getFlows()) {
                     numOfLines += flow.getMessageProcessorCount();
                     covered += flow.getCoveredProcessorCount();
                 }
-                for(int i = 0; i < numOfLines; i++) {
-                    int lineNumber = i;
-                    for(String line: lines) {
-                        if (line.contains(String.format("name=\"%s\"", file.getFlows().get(i))))
-                    }
+                for (int i = 0; i < numOfLines; i++) {
                     sourceFile.lines().add(
-                        new Line(
-                            i,
-                            1,
-                            i > covered ? 0 : 1,
-                            0,
-                            0
+                            new Line(
+                                    i,
+                                    1,
+                                    i > covered ? 0 : 1,
+                                    0,
+                                    0
                             ));
                 }
 
-               sourceFiles.add(sourceFile);
+                sourceFiles.add(sourceFile);
             }
         } catch (IOException ex) {
             ex.printStackTrace();

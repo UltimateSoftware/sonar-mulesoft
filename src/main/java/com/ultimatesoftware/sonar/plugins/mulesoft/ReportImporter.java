@@ -24,19 +24,19 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.coverage.NewCoverage;
 
 public class ReportImporter {
-  private final SensorContext ctx;
+    private final SensorContext ctx;
 
-  public ReportImporter(SensorContext ctx) {
-    this.ctx = ctx;
-  }
-
-  public void importCoverage(JsonParser.SourceFile sourceFile, InputFile inputFile) {
-    NewCoverage newCoverage = ctx.newCoverage()
-      .onFile(inputFile);
-
-    for (JsonParser.Line line : sourceFile.lines()) {
-      newCoverage.lineHits(line.number(), line.coveredInstrs() > 0 ? 1 : 0);
+    public ReportImporter(SensorContext ctx) {
+        this.ctx = ctx;
     }
-    newCoverage.save();
-  }
+
+    public void importCoverage(JsonParser.SourceFile sourceFile, InputFile inputFile) {
+        NewCoverage newCoverage = ctx.newCoverage()
+                .onFile(inputFile);
+
+        for (JsonParser.Line line : sourceFile.lines()) {
+            newCoverage.lineHits(line.number(), line.coveredInstrs() > 0 ? 1 : 0);
+        }
+        newCoverage.save();
+    }
 }

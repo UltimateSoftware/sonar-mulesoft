@@ -23,25 +23,26 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.annotation.CheckForNull;
+
 import org.sonar.api.batch.fs.InputFile;
 
 public class FileLocator {
-  private final ReversePathTree tree = new ReversePathTree();
+    private final ReversePathTree tree = new ReversePathTree();
 
-  public FileLocator(Iterable<InputFile> inputFiles) {
-    this(StreamSupport.stream(inputFiles.spliterator(), false).collect(Collectors.toList()));
-  }
-
-  public FileLocator(List<InputFile> inputFiles) {
-    for (InputFile inputFile : inputFiles) {
-      String[] path = inputFile.relativePath().split("/");
-      tree.index(inputFile, path);
+    public FileLocator(Iterable<InputFile> inputFiles) {
+        this(StreamSupport.stream(inputFiles.spliterator(), false).collect(Collectors.toList()));
     }
-  }
 
-  @CheckForNull
-  public InputFile getInputFile(String fileName) {
-    String[] path = fileName.split("/");
-    return tree.getFileWithSuffix(path);
-  }
+    public FileLocator(List<InputFile> inputFiles) {
+        for (InputFile inputFile : inputFiles) {
+            String[] path = inputFile.relativePath().split("/");
+            tree.index(inputFile, path);
+        }
+    }
+
+    @CheckForNull
+    public InputFile getInputFile(String fileName) {
+        String[] path = fileName.split("/");
+        return tree.getFileWithSuffix(path);
+    }
 }

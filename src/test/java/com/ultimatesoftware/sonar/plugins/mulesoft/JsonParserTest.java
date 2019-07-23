@@ -31,7 +31,7 @@ import org.junit.rules.TemporaryFolder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class XmlReportParserTest {
+public class JsonParserTest {
   @Rule
   public ExpectedException exception = ExpectedException.none();
 

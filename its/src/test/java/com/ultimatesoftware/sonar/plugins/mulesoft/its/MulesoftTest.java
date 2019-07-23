@@ -35,8 +35,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class MulesoftTest {
   private final static String PROJECT_KEY = "mulesoft-project";
-  private static final String FILE_KEY = "mulesoft-project:mulesoft/mule-integration-peopledoc-demographic-information.xml";
-  private static final String FILE_WITHOUT_COVERAGE_KEY = "mulesoft-project:mulesoft/peopledoc-integration-message-processor.xml";
+  private static final String FILE_KEY = "mulesoft-project:src/mule-integration-peopledoc-demographic-information.xml";
+  private static final String FILE_WITHOUT_COVERAGE_KEY = "mulesoft-project:src/peopledoc-integration-message-processor.xml";
 
   @ClassRule
   public static Orchestrator orchestrator;
@@ -65,9 +65,10 @@ public class MulesoftTest {
     SonarScanner build = SonarScanner.create()
       .setProjectKey(PROJECT_KEY)
       .setDebugLogs(true)
-      .setSourceDirs("mulesoft")
-      .setTestDirs("mule-soft-project")
-      .setProperty("sonar.coverage.mulesoft.jsonReportPaths", "mule-soft-project/munit-coverage.json")
+      .setSourceDirs("src")
+      .setTestDirs("report")
+      .setProperty("sonar.coverage.mulesoft.jsonReportPaths", "report/munit-coverage.json")
+      .setProperty("sonar.coverage.mulesoft.xmlSourcePaths", "src")
       .setProperty("sonar.java.binaries", ".")
       .setProjectDir(prepareProject("project"));
     orchestrator.executeBuild(build);
@@ -81,9 +82,10 @@ public class MulesoftTest {
     SonarScanner build = SonarScanner.create()
       .setProjectKey(PROJECT_KEY)
       .setDebugLogs(true)
-            .setSourceDirs("mulesoft")
-            .setTestDirs("mule-soft-project")
+            .setSourceDirs("src")
+            .setTestDirs("report")
       .setProperty("sonar.coverage.mulesoft.jsonReportPaths", "invalid.json")
+            .setProperty("sonar.coverage.mulesoft.xmlSourcePaths", "src")
       .setProperty("sonar.java.binaries", ".")
       .setProjectDir(prepareProject("project"));
     BuildResult result = orchestrator.executeBuild(build);
@@ -95,8 +97,9 @@ public class MulesoftTest {
     SonarScanner build = SonarScanner.create()
       .setProjectKey(PROJECT_KEY)
       .setDebugLogs(true)
-            .setSourceDirs("mulesoft")
-            .setTestDirs("mule-soft-project")
+            .setSourceDirs("src")
+            .setTestDirs("report")
+            .setProperty("sonar.coverage.mulesoft.xmlSourcePaths", "src")
       .setProperty("sonar.java.binaries", ".")
       .setProjectDir(prepareProject("project"));
     orchestrator.executeBuild(build);
@@ -108,8 +111,9 @@ public class MulesoftTest {
     SonarScanner build = SonarScanner.create()
       .setProjectKey(PROJECT_KEY)
       .setDebugLogs(true)
-            .setSourceDirs("mulesoft")
-            .setTestDirs("mule-soft-project")
+            .setSourceDirs("src")
+            .setTestDirs("report")
+            .setProperty("sonar.coverage.mulesoft.xmlSourcePaths", "src")
       .setProperty("sonar.coverage.mulesoft.jsonReportPaths", "invalid-sources.json")
       .setProperty("sonar.java.binaries", ".")
       .setProjectDir(prepareProject("project"));
