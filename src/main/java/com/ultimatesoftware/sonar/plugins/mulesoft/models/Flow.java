@@ -1,4 +1,4 @@
-package org.sonar.plugins.mulesoft.models;
+package com.ultimatesoftware.sonar.plugins.mulesoft.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

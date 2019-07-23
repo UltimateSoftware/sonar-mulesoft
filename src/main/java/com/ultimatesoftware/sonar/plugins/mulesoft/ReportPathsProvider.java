@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.mulesoft;
+package com.ultimatesoftware.sonar.plugins.mulesoft;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,39 +26,41 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.sonar.api.batch.sensor.SensorContext;
 
 class ReportPathsProvider {
-  private static final String[] DEFAULT_PATHS = {"MuleSoftReport/munit-coverage.json", "report/munit-coverage.json"};
-  static final String REPORT_PATHS_PROPERTY_KEY = "sonar.coverage.mulesoft.jsonReportPaths";
+    static final String SOURCE_PATHS_PROPERTY_KEY = "sonar.coverage.mulesoft.xmlSourcePaths";
+    private static final String[] DEFAULT_PATHS = {"MuleSoftReport/munit-coverage.json", "report/munit-coverage.json"};
+    static final String REPORT_PATHS_PROPERTY_KEY = "sonar.coverage.mulesoft.jsonReportPaths";
 
-  private final SensorContext context;
+    private final SensorContext context;
 
-  ReportPathsProvider(SensorContext context) {
-    this.context = context;
-  }
-
-  Collection<Path> getPaths() {
-    Set<Path> reportPaths = Stream.of(context.config().getStringArray(REPORT_PATHS_PROPERTY_KEY))
-      .map(this::toAbsolutePath)
-      .collect(Collectors.toSet());
-
-    if (!reportPaths.isEmpty()) {
-      return reportPaths;
+    ReportPathsProvider(SensorContext context) {
+        this.context = context;
     }
 
-    return Arrays.stream(DEFAULT_PATHS)
-      .map(this::toAbsolutePath)
-      .filter(ReportPathsProvider::reportExists)
-      .collect(Collectors.toSet());
-  }
+    Collection<Path> getPaths() {
+        Set<Path> reportPaths = Stream.of(context.config().getStringArray(REPORT_PATHS_PROPERTY_KEY))
+                .map(this::toAbsolutePath)
+                .collect(Collectors.toSet());
 
-  private Path toAbsolutePath(String reportPath) {
-    return context.fileSystem().baseDir().toPath().resolve(reportPath);
-  }
+        if (!reportPaths.isEmpty()) {
+            return reportPaths;
+        }
 
-  private static boolean reportExists(Path path) {
-    return Files.isRegularFile(path);
-  }
+        return Arrays.stream(DEFAULT_PATHS)
+                .map(this::toAbsolutePath)
+                .filter(ReportPathsProvider::reportExists)
+                .collect(Collectors.toSet());
+    }
+
+    private Path toAbsolutePath(String reportPath) {
+        return context.fileSystem().baseDir().toPath().resolve(reportPath);
+    }
+
+    private static boolean reportExists(Path path) {
+        return Files.isRegularFile(path);
+    }
 
 }

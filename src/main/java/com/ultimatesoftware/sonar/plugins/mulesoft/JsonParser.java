@@ -17,12 +17,12 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.mulesoft;
+package com.ultimatesoftware.sonar.plugins.mulesoft;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.sonar.plugins.mulesoft.models.Flow;
-import org.sonar.plugins.mulesoft.models.MunitFile;
-import org.sonar.plugins.mulesoft.models.MunitReport;
+import com.ultimatesoftware.sonar.plugins.mulesoft.models.Flow;
+import com.ultimatesoftware.sonar.plugins.mulesoft.models.MunitFile;
+import com.ultimatesoftware.sonar.plugins.mulesoft.models.MunitReport;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -30,10 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import javax.xml.stream.XMLStreamReader;
 
 public class JsonParser {
     private final Path jsonReportPath;

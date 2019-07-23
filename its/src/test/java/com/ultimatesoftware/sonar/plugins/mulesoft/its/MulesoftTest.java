@@ -1,4 +1,4 @@
-package org.sonar.plugins.mulesoft.its;
+package com.ultimatesoftware.sonar.plugins.mulesoft.its;
 
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.OrchestratorBuilder;
