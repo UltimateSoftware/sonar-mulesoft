@@ -31,6 +31,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import javax.xml.stream.XMLStreamReader;
 
 public class JsonParser {
@@ -53,17 +55,20 @@ public class JsonParser {
 
             for (MunitFile file : mur.getFiles()) {
                 BufferedReader reader = new BufferedReader(new FileReader(this.jsonReportPath.getParent().getParent().toString() + "/mulesoft/" + file.getName()));
-                int lines = 0;
-                while (reader.readLine() != null) lines++;
+                List<String> lines = reader.lines().collect(Collectors.toList());
                 reader.close();
                 SourceFile sourceFile = new SourceFile("", file.getName());
-                lines = 0;
+                int numOfLines = 0;
                 int covered = 0;
                 for(Flow flow: file.getFlows()) {
-                    lines += flow.getMessageProcessorCount();
+                    numOfLines += flow.getMessageProcessorCount();
                     covered += flow.getCoveredProcessorCount();
                 }
-                for(int i = 1; i <= lines; i++) {
+                for(int i = 0; i < numOfLines; i++) {
+                    int lineNumber = i;
+                    for(String line: lines) {
+                        if (line.contains(String.format("name=\"%s\"", file.getFlows().get(i))))
+                    }
                     sourceFile.lines().add(
                         new Line(
                             i,
