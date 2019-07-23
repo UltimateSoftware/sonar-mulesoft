@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
+
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -31,58 +32,58 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
 public class MulesoftSensor implements Sensor {
-  private static final Logger LOG = Loggers.get(MulesoftSensor.class);
+    private static final Logger LOG = Loggers.get(MulesoftSensor.class);
 
-  @Override
-  public void describe(SensorDescriptor descriptor) {
-    descriptor.name("MuleSoft JSON Report Importer");
-  }
-
-  @Override
-  public void execute(SensorContext context) {
-    ReportPathsProvider reportPathsProvider = new ReportPathsProvider(context);
-    Iterable<InputFile> inputFiles = context.fileSystem().inputFiles(context.fileSystem().predicates().all());
-    FileLocator locator = new FileLocator(inputFiles);
-    ReportImporter importer = new ReportImporter(context);
-
-    importReports(reportPathsProvider, locator, importer);
-  }
-
-  void importReports(ReportPathsProvider reportPathsProvider, FileLocator locator, ReportImporter importer) {
-    Collection<Path> reportPaths = reportPathsProvider.getPaths();
-    if (reportPaths.isEmpty()) {
-      LOG.debug("No reports found");
-      return;
+    @Override
+    public void describe(SensorDescriptor descriptor) {
+        descriptor.name("MuleSoft JSON Report Importer");
     }
 
-    for (Path reportPath : reportPaths) {
-      if (!Files.isRegularFile(reportPath)) {
-        LOG.warn("Report doesn't exist: '{}'", reportPath);
-      } else {
-        LOG.debug("Reading report '{}'", reportPath);
-        try {
-          importReport(new JsonParser(reportPath), locator, importer);
-        } catch (Exception e) {
-          LOG.error("Coverage report '{}' could not be read/imported. Error: {}", reportPath, e);
+    @Override
+    public void execute(SensorContext context) {
+        ReportPathsProvider reportPathsProvider = new ReportPathsProvider(context);
+        Iterable<InputFile> inputFiles = context.fileSystem().inputFiles(context.fileSystem().predicates().all());
+        FileLocator locator = new FileLocator(inputFiles);
+        ReportImporter importer = new ReportImporter(context);
+
+        importReports(reportPathsProvider, locator, importer);
+    }
+
+    void importReports(ReportPathsProvider reportPathsProvider, FileLocator locator, ReportImporter importer) {
+        Collection<Path> reportPaths = reportPathsProvider.getPaths();
+        if (reportPaths.isEmpty()) {
+            LOG.debug("No reports found");
+            return;
         }
-      }
+
+        for (Path reportPath : reportPaths) {
+            if (!Files.isRegularFile(reportPath)) {
+                LOG.warn("Report doesn't exist: '{}'", reportPath);
+            } else {
+                LOG.debug("Reading report '{}'", reportPath);
+                try {
+                    importReport(new JsonParser(reportPath), locator, importer);
+                } catch (Exception e) {
+                    LOG.error("Coverage report '{}' could not be read/imported. Error: {}", reportPath, e);
+                }
+            }
+        }
     }
-  }
 
-  void importReport(JsonParser reportParser, FileLocator locator, ReportImporter importer) {
-    List<JsonParser.SourceFile> sourceFiles = reportParser.parse();
+    void importReport(JsonParser reportParser, FileLocator locator, ReportImporter importer) {
+        List<JsonParser.SourceFile> sourceFiles = reportParser.parse();
 
-    for (JsonParser.SourceFile sourceFile : sourceFiles) {
-      InputFile inputFile = locator.getInputFile(sourceFile.name());
-      if (inputFile == null) {
-        continue;
-      }
+        for (JsonParser.SourceFile sourceFile : sourceFiles) {
+            InputFile inputFile = locator.getInputFile(sourceFile.name());
+            if (inputFile == null) {
+                continue;
+            }
 
-      try {
-        importer.importCoverage(sourceFile, inputFile);
-      } catch (IllegalStateException e) {
-        LOG.error("Cannot import coverage information for file '{}', coverage data is invalid. Error: {}", inputFile, e);
-      }
+            try {
+                importer.importCoverage(sourceFile, inputFile);
+            } catch (IllegalStateException e) {
+                LOG.error("Cannot import coverage information for file '{}', coverage data is invalid. Error: {}", inputFile, e);
+            }
+        }
     }
-  }
 }

@@ -72,7 +72,7 @@ public class JacocoSensorTest {
     sourceFile.lines().add(new JsonParser.Line(1, 0, 1, 0, 0));
 
     when(parser.parse()).thenReturn(Collections.singletonList(sourceFile));
-    when(locator.getInputFile("package", "File.java")).thenReturn(inputFile);
+    when(locator.getInputFile("File.java")).thenReturn(inputFile);
 
     sensor.importReport(parser, locator, importer);
 
@@ -116,7 +116,7 @@ public class JacocoSensorTest {
     Path invalidFile = baseDir.resolve("invalid_ci_in_line.xml");
     Path validFile = baseDir.resolve("jacoco.xml");
 
-    when(locator.getInputFile("org/sonarlint/cli", "Stats.java")).thenReturn(inputFile);
+    when(locator.getInputFile("Stats.java")).thenReturn(inputFile);
     when(reportPathsProvider.getPaths()).thenReturn(Arrays.asList(invalidFile, validFile));
 
     sensor.importReports(reportPathsProvider, locator, importer);

@@ -21,40 +21,41 @@ package com.ultimatesoftware.sonar.plugins.mulesoft;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 import org.sonar.api.batch.fs.InputFile;
 
 public class ReversePathTree {
-  private Node root = new Node();
+    private Node root = new Node();
 
-  public void index(InputFile inputFile, String[] path) {
-    Node currentNode = root;
-    for (int i = path.length - 1; i >= 0; i--) {
-      currentNode = currentNode.children.computeIfAbsent(path[i], e -> new Node());
+    public void index(InputFile inputFile, String[] path) {
+        Node currentNode = root;
+        for (int i = path.length - 1; i >= 0; i--) {
+            currentNode = currentNode.children.computeIfAbsent(path[i], e -> new Node());
+        }
+        currentNode.file = inputFile;
     }
-    currentNode.file = inputFile;
-  }
 
-  public InputFile getFileWithSuffix(String[] path) {
-    Node currentNode = root;
+    public InputFile getFileWithSuffix(String[] path) {
+        Node currentNode = root;
 
-    for (int i = path.length - 1; i >= 0; i--) {
-      currentNode = currentNode.children.get(path[i]);
-      if (currentNode == null) {
-        return null;
-      }
+        for (int i = path.length - 1; i >= 0; i--) {
+            currentNode = currentNode.children.get(path[i]);
+            if (currentNode == null) {
+                return null;
+            }
+        }
+        return getFirstLeaf(currentNode);
     }
-    return getFirstLeaf(currentNode);
-  }
 
-  private static InputFile getFirstLeaf(Node node) {
-    while (!node.children.isEmpty()) {
-      node = node.children.values().iterator().next();
+    private static InputFile getFirstLeaf(Node node) {
+        while (!node.children.isEmpty()) {
+            node = node.children.values().iterator().next();
+        }
+        return node.file;
     }
-    return node.file;
-  }
 
-  static class Node {
-    Map<String, Node> children = new LinkedHashMap<>();
-    InputFile file = null;
-  }
+    static class Node {
+        Map<String, Node> children = new LinkedHashMap<>();
+        InputFile file = null;
+    }
 }

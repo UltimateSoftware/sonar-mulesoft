@@ -23,18 +23,18 @@ import org.sonar.api.Plugin;
 import org.sonar.api.config.PropertyDefinition;
 
 public class MulesoftPlugin implements Plugin {
-  @Override
-  public void define(Context context) {
-    context.addExtension(MulesoftSensor.class);
-    context.addExtension(PropertyDefinition.builder(ReportPathsProvider.REPORT_PATHS_PROPERTY_KEY)
-            .multiValues(true)
-            .category("MuleSoft")
-            .description("Paths to MuleSoft JSON coverage report files. Each path can be either absolute or relative to the project base directory.")
-            .build());
-    context.addExtension(PropertyDefinition.builder(ReportPathsProvider.SOURCE_PATHS_PROPERTY_KEY)
-      .multiValues(true)
-      .category("MuleSoft")
-      .description("Paths to MuleSoft XML source files. Each path can be either absolute or relative to the project base directory.")
-      .build());
-  }
+    @Override
+    public void define(Context context) {
+        context.addExtension(MulesoftSensor.class);
+        context.addExtension(PropertyDefinition.builder(ReportPathsProvider.REPORT_PATHS_PROPERTY_KEY)
+                .multiValues(true)
+                .category("MuleSoft")
+                .description("Paths to MuleSoft JSON coverage report files. Each path can be either absolute or relative to the project base directory.")
+                .build());
+        context.addExtension(PropertyDefinition.builder(ReportPathsProvider.SOURCE_PATHS_PROPERTY_KEY)
+                .multiValues(true)
+                .category("MuleSoft")
+                .description("Paths to MuleSoft XML source files. Each path can be either absolute or relative to the project base directory.")
+                .build());
+    }
 }
