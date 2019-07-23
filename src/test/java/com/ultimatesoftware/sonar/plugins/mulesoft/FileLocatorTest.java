@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.mulesoft;
+package com.ultimatesoftware.sonar.plugins.mulesoft;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,15 +32,15 @@ public class FileLocatorTest {
   public void should_match_suffix() {
     InputFile inputFile = new TestInputFileBuilder("module1", "src/main/java/org/sonar/test/File.java").build();
     FileLocator locator = new FileLocator(Collections.singleton(inputFile));
-    assertThat(locator.getInputFile("org/sonar/test", "File.java")).isEqualTo(inputFile);
+    assertThat(locator.getInputFile("File.java")).isEqualTo(inputFile);
   }
 
   @Test
   public void should_not_match() {
     InputFile inputFile = new TestInputFileBuilder("module1", "src/main/java/org/sonar/test/File.java").build();
     FileLocator locator = new FileLocator(Collections.singleton(inputFile));
-    assertThat(locator.getInputFile("org/sonar/test", "File2.java")).isNull();
-    assertThat(locator.getInputFile("org/sonar/test2", "File.java")).isNull();
+    assertThat(locator.getInputFile("File2.java")).isNull();
+    assertThat(locator.getInputFile("File.java")).isNull();
   }
 
   @Test
@@ -49,6 +49,6 @@ public class FileLocatorTest {
     InputFile inputFile2 = new TestInputFileBuilder("module1", "src/test/java/org/sonar/test/File.java").build();
 
     FileLocator locator = new FileLocator(Arrays.asList(inputFile1, inputFile2));
-    assertThat(locator.getInputFile("org/sonar/test", "File.java")).isEqualTo(inputFile1);
+    assertThat(locator.getInputFile("File.java")).isEqualTo(inputFile1);
   }
 }
