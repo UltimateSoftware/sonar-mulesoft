@@ -57,7 +57,7 @@ public class JsonParser {
                     numOfLines += flow.getMessageProcessorCount();
                     covered += flow.getCoveredProcessorCount();
                 }
-                for (int i = 0; i < numOfLines; i++) {
+                for (int i = 1; i <= numOfLines; i++) {
                     sourceFile.lines().add(
                             new Line(
                                     i,
