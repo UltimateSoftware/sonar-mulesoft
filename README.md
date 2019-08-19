@@ -1,8 +1,11 @@
 # SonarQube Mulesoft Plugin
 ## Build
 To build the project use the Gradle task `shadowJar` under `shadow` tasks, this ensures you build a fat jar containing all the dependencies.
-
+```java
+./gradlew shadowJar
+```
 ## Test
+
 ### Unit Tests
 
 ### System

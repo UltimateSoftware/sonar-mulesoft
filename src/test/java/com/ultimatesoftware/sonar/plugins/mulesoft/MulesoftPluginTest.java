@@ -30,7 +30,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-public class JacocoPluginTest {
+public class MulesoftPluginTest {
   private MulesoftPlugin plugin = new MulesoftPlugin();
   private Plugin.Context ctx = mock(Plugin.Context.class);
   @Test

@@ -45,7 +45,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-public class JacocoSensorTest {
+public class MulesoftSensorTest {
   @Rule
   public TemporaryFolder temp = new TemporaryFolder();
 

@@ -30,25 +30,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class FileLocatorTest {
   @Test
   public void should_match_suffix() {
-    InputFile inputFile = new TestInputFileBuilder("module1", "src/main/java/org/sonar/test/File.java").build();
+    InputFile inputFile = new TestInputFileBuilder("module1", "its/src/test/resources/project/src/common-configurations.xml").build();
     FileLocator locator = new FileLocator(Collections.singleton(inputFile));
-    assertThat(locator.getInputFile("File.java")).isEqualTo(inputFile);
+    assertThat(locator.getInputFile("common-configurations.xml")).isEqualTo(inputFile);
   }
 
   @Test
   public void should_not_match() {
-    InputFile inputFile = new TestInputFileBuilder("module1", "src/main/java/org/sonar/test/File.java").build();
+    InputFile inputFile = new TestInputFileBuilder("module1", "its/src/test/resources/project/src/common-configurations.xml").build();
     FileLocator locator = new FileLocator(Collections.singleton(inputFile));
-    assertThat(locator.getInputFile("File2.java")).isNull();
-    assertThat(locator.getInputFile("File.java")).isNull();
+    assertThat(locator.getInputFile("common-configurations.xml2")).isNull();
   }
 
   @Test
   public void should_match_first_with_many_options() {
-    InputFile inputFile1 = new TestInputFileBuilder("module1", "src/main/java/org/sonar/test/File.java").build();
-    InputFile inputFile2 = new TestInputFileBuilder("module1", "src/test/java/org/sonar/test/File.java").build();
+    InputFile inputFile1 = new TestInputFileBuilder("module1", "its/src/test/resources/project/src/common-configurations.xml").build();
+    InputFile inputFile2 = new TestInputFileBuilder("module1", "its/src/test/resources/project/src/common-configurations.xml").build();
 
     FileLocator locator = new FileLocator(Arrays.asList(inputFile1, inputFile2));
-    assertThat(locator.getInputFile("File.java")).isEqualTo(inputFile1);
+    assertThat(locator.getInputFile("common-configurations.xml")).isEqualTo(inputFile1);
   }
 }
