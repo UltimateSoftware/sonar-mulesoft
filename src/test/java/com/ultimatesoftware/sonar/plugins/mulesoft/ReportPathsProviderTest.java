@@ -38,26 +38,21 @@ public class ReportPathsProviderTest {
 
   private SensorContextTester tester;
   private ReportPathsProvider provider;
-  private Path mavenPath = Paths.get("target", "site", "jacoco", "jacoco.xml");
+  private Path mavenPath = Paths.get("munit-coverage.json");
   private Path baseDir;
 
   @Before
   public void setUp() throws IOException {
     baseDir = temp.newFolder("baseDir").toPath();
     tester = SensorContextTester.create(baseDir);
-    provider = new ReportPathsProvider(tester);
-  }
-
-  private void createMavenReport() throws IOException {
     Path reportPath = baseDir.resolve(mavenPath);
     Files.createDirectories(reportPath.getParent());
     Files.createFile(reportPath);
+    provider = new ReportPathsProvider(tester);
   }
 
   @Test
   public void should_use_provided_paths() throws IOException {
-    // even though a report will exist in a default location, it shouldn't get loaded since a path is passed as a parameter.
-    createMavenReport();
 
     MapSettings settings = new MapSettings();
     settings.setProperty(ReportPathsProvider.REPORT_PATHS_PROPERTY_KEY, "mypath1,mypath2");
@@ -73,12 +68,6 @@ public class ReportPathsProviderTest {
     tester.setSettings(settings);
 
     assertThat(provider.getPaths()).containsOnly(Paths.get("/my/path"));
-  }
-
-  @Test
-  public void should_fallback_to_defaults_if_exist() throws IOException {
-    createMavenReport();
-    assertThat(provider.getPaths()).containsOnly(baseDir.resolve(mavenPath));
   }
 
   @Test

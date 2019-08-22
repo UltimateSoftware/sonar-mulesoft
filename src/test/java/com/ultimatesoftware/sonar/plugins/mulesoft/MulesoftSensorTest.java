@@ -58,21 +58,21 @@ public class MulesoftSensorTest {
   public void describe_sensor() {
     SensorDescriptor descriptor = mock(SensorDescriptor.class);
     sensor.describe(descriptor);
-    verify(descriptor).name("JaCoCo XML Report Importer");
+    verify(descriptor).name("MuleSoft JSON Report Importer");
   }
 
   @Test
-  public void import_coverage() {
+  public void import_coverage() throws IOException {
     FileLocator locator = mock(FileLocator.class);
     ReportImporter importer = mock(ReportImporter.class);
     JsonParser parser = mock(JsonParser.class);
     InputFile inputFile = mock(InputFile.class);
 
-    JsonParser.SourceFile sourceFile = new JsonParser.SourceFile("package", "File.java");
+    JsonParser.SourceFile sourceFile = new JsonParser.SourceFile("package", "common-configuration.xml");
     sourceFile.lines().add(new JsonParser.Line(1, 0, 1, 0, 0));
 
     when(parser.parse()).thenReturn(Collections.singletonList(sourceFile));
-    when(locator.getInputFile("File.java")).thenReturn(inputFile);
+    when(locator.getInputFile("common-configuration.xml")).thenReturn(inputFile);
 
     sensor.importReport(parser, locator, importer);
 
@@ -114,23 +114,23 @@ public class MulesoftSensorTest {
     InputFile inputFile = mock(InputFile.class);
     Path baseDir = Paths.get("src", "test", "resources");
     Path invalidFile = baseDir.resolve("invalid_ci_in_line.xml");
-    Path validFile = baseDir.resolve("jacoco.xml");
+    Path validFile = baseDir.resolve("munit-coverage.json");
 
-    when(locator.getInputFile("Stats.java")).thenReturn(inputFile);
+    when(locator.getInputFile("common-configurations.xml")).thenReturn(inputFile);
     when(reportPathsProvider.getPaths()).thenReturn(Arrays.asList(invalidFile, validFile));
 
     sensor.importReports(reportPathsProvider, locator, importer);
 
     verify(reportPathsProvider).getPaths();
     String expectedErrorMessage = String.format(
-      "Coverage report '%s' could not be read/imported. Error: java.lang.IllegalStateException: Invalid report: failed to parse integer from the attribute 'ci' for the sourcefile 'File.java' at line 6 column 61",
+      "Report doesn't exist: 'src/test/resources/invalid_ci_in_line.xml'",
       invalidFile.toString());
     assertThat(logTester.logs()).contains(expectedErrorMessage);
     verify(importer, times(1)).importCoverage(any(), eq(inputFile));
   }
 
   @Test
-  public void do_nothing_if_file_not_found() {
+  public void do_nothing_if_file_not_found() throws IOException {
     FileLocator locator = mock(FileLocator.class);
     ReportImporter importer = mock(ReportImporter.class);
     JsonParser parser = mock(JsonParser.class);
@@ -145,44 +145,19 @@ public class MulesoftSensorTest {
   @Test
   public void test_load_real_report() throws URISyntaxException, IOException {
     MapSettings settings = new MapSettings();
-    settings.setProperty(ReportPathsProvider.REPORT_PATHS_PROPERTY_KEY, "jacoco.xml");
+    settings.setProperty(ReportPathsProvider.REPORT_PATHS_PROPERTY_KEY, "munit-coverage.json");
     SensorContextTester tester = SensorContextTester.create(temp.getRoot());
     tester.setSettings(settings);
     InputFile inputFile = TestInputFileBuilder
-      .create("module", "org/sonarlint/cli/Main.java")
+      .create("module", "common-configurations.xml")
       .setLines(1000)
       .build();
     tester.fileSystem().add(inputFile);
-    Path sample = load("jacoco.xml");
-    Files.copy(sample, temp.getRoot().toPath().resolve("jacoco.xml"));
+    Path sample = load("munit-coverage.json");
+    Files.copy(sample, temp.getRoot().toPath().resolve("munit-coverage.json"));
 
     sensor.execute(tester);
-    assertThat(tester.lineHits(inputFile.key(), 110)).isEqualTo(1);
-    assertThat(tester.conditions(inputFile.key(), 110)).isEqualTo(2);
-    assertThat(tester.coveredConditions(inputFile.key(), 110)).isEqualTo(1);
-  }
-
-  @Test
-  public void import_failure_do_not_fail_analysis() throws URISyntaxException, IOException {
-    MapSettings settings = new MapSettings();
-    settings.setProperty(ReportPathsProvider.REPORT_PATHS_PROPERTY_KEY, "invalid_line_number.xml");
-    SensorContextTester tester = SensorContextTester.create(temp.getRoot());
-    tester.setSettings(settings);
-    InputFile inputFile = TestInputFileBuilder
-      .create("module", "org/sonarlint/cli/File.java")
-      .setLines(1000)
-      .build();
-    tester.fileSystem().add(inputFile);
-    Path sample = load("invalid_line_number.xml");
-    Files.copy(sample, temp.getRoot().toPath().resolve("invalid_line_number.xml"));
-
-    sensor.execute(tester);
-
-    String expectedLogError = String.format(
-      "Cannot import coverage information for file '%s', coverage data is invalid. Error: java.lang.IllegalStateException: Line 1001 is out of range in the file %s (lines: 1000)",
-      inputFile,
-      inputFile);
-    assertThat(logTester.logs()).contains(expectedLogError);
+    assertThat(tester.lineHits(inputFile.key(), 1)).isEqualTo(1);
   }
 
   private Path load(String name) throws URISyntaxException {

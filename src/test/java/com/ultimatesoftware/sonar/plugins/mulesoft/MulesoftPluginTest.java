@@ -38,13 +38,13 @@ public class MulesoftPluginTest {
     plugin.define(ctx);
 
     ArgumentCaptor<Object> arg = ArgumentCaptor.forClass(Object.class);
-    verify(ctx, times(2)).addExtension(arg.capture());
+    verify(ctx, times(3)).addExtension(arg.capture());
     verifyNoMoreInteractions(ctx);
 
     assertThat(arg.getAllValues().get(0)).isEqualTo(MulesoftSensor.class);
     assertThat(arg.getAllValues().get(1)).isInstanceOf(PropertyDefinition.class);
     PropertyDefinition propertyDefinition = (PropertyDefinition) arg.getAllValues().get(1);
-    assertThat(propertyDefinition.key()).isEqualTo("sonar.coverage.jacoco.xmlReportPaths");
-    assertThat(propertyDefinition.category()).isEqualTo("JaCoCo");
+    assertThat(propertyDefinition.key()).isEqualTo("sonar.coverage.mulesoft.jsonReportPaths");
+    assertThat(propertyDefinition.category()).isEqualTo("MuleSoft");
   }
 }
