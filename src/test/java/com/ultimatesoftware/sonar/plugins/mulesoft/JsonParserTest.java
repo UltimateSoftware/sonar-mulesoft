@@ -24,6 +24,8 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+
+import com.fasterxml.jackson.databind.JsonMappingException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -43,137 +45,38 @@ public class JsonParserTest {
   }
 
   @Test
-  public void should_parse_all_items_in_report() throws URISyntaxException {
-    Path sample = load("jacoco.xml");
+  public void should_parse_all_items_in_report() throws URISyntaxException, IOException {
+    Path sample = load("munit-coverage.json");
     JsonParser report = new JsonParser(sample);
     List<JsonParser.SourceFile> sourceFiles = report.parse();
 
-    assertThat(sourceFiles).hasSize(36);
-    assertThat(sourceFiles.stream().mapToInt(sf -> sf.lines().size()).sum()).isEqualTo(1321);
+    assertThat(sourceFiles).hasSize(6);
+    assertThat(sourceFiles.stream().mapToInt(sf -> sf.lines().size()).sum()).isEqualTo(84);
   }
 
   @Test
-  public void should_parse_all_attributes() throws URISyntaxException {
-    Path sample = load("simple.xml");
+  public void should_parse_all_attributes() throws URISyntaxException, IOException {
+    Path sample = load("munit-coverage.json");
     JsonParser report = new JsonParser(sample);
     List<JsonParser.SourceFile> sourceFiles = report.parse();
 
-    assertThat(sourceFiles).hasSize(1);
-    assertThat(sourceFiles.stream().mapToInt(sf -> sf.lines().size()).sum()).isEqualTo(1);
-    assertThat(sourceFiles.get(0).name()).isEqualTo("File.java");
-    assertThat(sourceFiles.get(0).packageName()).isEqualTo("org/sonarlint/cli");
-    assertThat(sourceFiles.get(0).lines().get(0).number()).isEqualTo(24);
-    assertThat(sourceFiles.get(0).lines().get(0).missedInstrs()).isEqualTo(1);
-    assertThat(sourceFiles.get(0).lines().get(0).coveredInstrs()).isEqualTo(2);
-    assertThat(sourceFiles.get(0).lines().get(0).missedBranches()).isEqualTo(3);
-    assertThat(sourceFiles.get(0).lines().get(0).coveredBranches()).isEqualTo(4);
-  }
-
-  @Test
-  public void should_treat_missing_mi_ci_mb_cb_in_line_as_zeros() throws Exception {
-    Path sample = load("line_without_mi_ci_mb_cb.xml");
-    JsonParser report = new JsonParser(sample);
-    List<JsonParser.SourceFile> sourceFiles = report.parse();
-
-    assertThat(sourceFiles).hasSize(1);
-    assertThat(sourceFiles.stream().mapToInt(sf -> sf.lines().size()).sum()).isEqualTo(1);
-    assertThat(sourceFiles.get(0).name()).isEqualTo("Example.java");
-    assertThat(sourceFiles.get(0).packageName()).isEqualTo("org/example");
-    assertThat(sourceFiles.get(0).lines().get(0).number()).isEqualTo(42);
+    assertThat(sourceFiles).hasSize(6);
+    assertThat(sourceFiles.stream().mapToInt(sf -> sf.lines().size()).sum()).isEqualTo(84);
+    assertThat(sourceFiles.get(0).name()).isEqualTo("peopledoc-integration-upload-file.xml");
+    assertThat(sourceFiles.get(0).packageName()).isEqualTo("");
+    assertThat(sourceFiles.get(0).lines().size()).isEqualTo(7);
     assertThat(sourceFiles.get(0).lines().get(0).missedInstrs()).isEqualTo(0);
-    assertThat(sourceFiles.get(0).lines().get(0).coveredInstrs()).isEqualTo(0);
+    assertThat(sourceFiles.get(0).lines().get(0).coveredInstrs()).isEqualTo(1);
     assertThat(sourceFiles.get(0).lines().get(0).missedBranches()).isEqualTo(0);
     assertThat(sourceFiles.get(0).lines().get(0).coveredBranches()).isEqualTo(0);
   }
 
   @Test
-  public void should_fail_if_report_is_not_xml() throws IOException {
-    Path filePath = temp.newFile("report.xml").toPath();
+  public void should_fail_if_report_is_not_json() throws IOException {
+    Path filePath = temp.newFile("munit-coverage-not-json.txt").toPath();
     JsonParser report = new JsonParser(filePath);
 
-    exception.expect(IllegalStateException.class);
-    exception.expectMessage("Failed to parse JaCoCo XML report: " + filePath.toAbsolutePath());
+    exception.expect(JsonMappingException.class);
     report.parse();
   }
-
-  @Test
-  public void should_fail_if_name_missing_in_package() throws URISyntaxException {
-    Path sample = load("name_missing_in_package.xml");
-    JsonParser report = new JsonParser(sample);
-
-    exception.expect(IllegalStateException.class);
-    exception.expectMessage("Invalid report: couldn't find the attribute 'name' for a 'package' at line 4 column 14");
-    report.parse();
-  }
-
-  @Test
-  public void should_fail_if_name_missing_in_sourcefile() throws URISyntaxException {
-    Path sample = load("name_missing_in_sourcefile.xml");
-    JsonParser report = new JsonParser(sample);
-
-    exception.expect(IllegalStateException.class);
-    exception.expectMessage("Invalid report: couldn't find the attribute 'name' for a sourcefile at line 5 column 21");
-    report.parse();
-  }
-
-  @Test
-  public void should_fail_if_line_not_within_sourcefile() throws URISyntaxException {
-    Path sample = load("line_not_within_sourcefile.xml");
-    JsonParser report = new JsonParser(sample);
-
-    exception.expect(IllegalStateException.class);
-    exception.expectMessage( "Invalid report: expected to find 'line' within a 'sourcefile' at line 5 column 52");
-    report.parse();
-  }
-
-  @Test
-  public void should_fail_if_sourcefile_not_within_package() throws URISyntaxException {
-    Path sample = load("sourcefile_not_within_package.xml");
-    JsonParser report = new JsonParser(sample);
-
-    exception.expect(IllegalStateException.class);
-    exception.expectMessage( "Invalid report: expected to find 'sourcefile' within a 'package' at line 4 column 17");
-    report.parse();
-  }
-
-  @Test
-  public void should_fail_if_ci_is_invalid_in_line() throws URISyntaxException {
-    Path sample = load("invalid_ci_in_line.xml");
-    JsonParser report = new JsonParser(sample);
-
-    exception.expect(IllegalStateException.class);
-    exception.expectMessage("Invalid report: failed to parse integer from the attribute 'ci' for the sourcefile 'File.java' at line 6 column 61");
-    report.parse();
-  }
-
-  @Test
-  public void should_fail_if_nr_is_invalid_in_line() throws URISyntaxException {
-    Path sample = load("invalid_nr_in_line.xml");
-    JsonParser report = new JsonParser(sample);
-
-    exception.expect(IllegalStateException.class);
-    exception.expectMessage("Invalid report: failed to parse integer from the attribute 'nr' for the sourcefile 'File.java' at line 6 column 31");
-    report.parse();
-  }
-
-  @Test
-  public void should_fail_if_nr_missing_in_line() throws URISyntaxException {
-    Path sample = load("nr_missing_in_line.xml");
-    JsonParser report = new JsonParser(sample);
-
-    exception.expect(IllegalStateException.class);
-    exception.expectMessage("Invalid report: couldn't find the attribute 'nr' for the sourcefile 'File.java' at line 6 column 21");
-    report.parse();
-  }
-
-  @Test
-  public void should_import_kotlin_report() throws URISyntaxException {
-    Path sample = load("kotlin.xml");
-    JsonParser report = new JsonParser(sample);
-    List<JsonParser.SourceFile> sourceFiles = report.parse();
-
-    assertThat(sourceFiles).hasSize(5);
-    assertThat(sourceFiles.stream().mapToInt(sf -> sf.lines().size()).sum()).isEqualTo(79);
-  }
-
 }

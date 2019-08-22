@@ -1,0 +1,27 @@
+{
+  "coverage": 75.0,
+  "requiredApplicationCoverage": -1.0,
+  "requiredResourceCoverage": -1.0,
+  "requiredFlowCoverage": -1.0,
+  "flowCount": 11,
+  "processorCount": 84,
+  "coveredProcessorCount": 63,
+  "files": [
+    {
+      "name": "not-here.xml",
+      "flowCount": 1,
+      "coverage": 100.0,
+      "processorCount": 7,
+      "weight": 8.333333333333334,
+      "flows": [
+        {
+          "name": "peopledoc-integration-upload-fileFlow",
+          "type": "FLOW",
+          "coverage": 100.0,
+          "messageProcessorCount": 7,
+          "coveredProcessorCount": 7
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "coverage": 75.0,
+  "requiredApplicationCoverage": -1.0,
+  "requiredResourceCoverage": -1.0,
+  "requiredFlowCoverage": -1.0,
+  "flowCount": 11,
+  "processorCount": 84,
+  "coveredProcessorCount": 63,
+  "files": [
+    {
+      "name": "peopledoc-integration-upload-file.xml",
+      "flowCount": 1,
+      "coverage": 100.0,
+      "processorCount": 7,
+      "weight": 8.333333333333334,
+      "flows": [
+        {
+          "name": "peopledoc-integration-upload-fileFlow",
+          "type": "FLOW",
+          "coverage": 100.0,
+          "messageProcessorCount": 7,
+          "coveredProcessorCount": 7
+        }
+      ]
+    },
+    {
+      "name": "mule-integration-peopledoc-demographic-information.xml",
+      "flowCount": 3,
+      "coverage": 85.71428571428571,
+      "processorCount": 28,
+      "weight": 33.333333333333336,
+      "flows": [
+        {
+          "name": "location-lookup",
+          "type": "FLOW",
+          "coverage": 50.0,
+          "messageProcessorCount": 8,
+          "coveredProcessorCount": 4
+        },
+        {
+          "name": "mule-integration-peopledoc-demographic-information-flow",
+          "type": "FLOW",
+          "coverage": 100.0,
+          "messageProcessorCount": 8,
+          "coveredProcessorCount": 8
+        },
+        {
+          "name": "mule-integration-peopledoc-demographic-information-mapping-flow",
+          "type": "FLOW",
+          "coverage": 100.0,
+          "messageProcessorCount": 12,
+          "coveredProcessorCount": 12
+        }
+      ]
+    },
+    {
+      "name": "mule-integration-peopledoc-user-profile.xml",
+      "flowCount": 2,
+      "coverage": 100.0,
+      "processorCount": 17,
+      "weight": 20.238095238095237,
+      "flows": [
+        {
+          "name": "mule-integration-peopledoc-user-profile-flow",
+          "type": "FLOW",
+          "coverage": 100.0,
+          "messageProcessorCount": 7,
+          "coveredProcessorCount": 7
+        },
+        {
+          "name": "mule-integration-peopledoc-user-profile-mapping-flow",
+          "type": "FLOW",
+          "coverage": 100.0,
+          "messageProcessorCount": 10,
+          "coveredProcessorCount": 10
+        }
+      ]
+    },
+    {
+      "name": "common-configurations.xml",
+      "flowCount": 2,
+      "coverage": 20.0,
+      "processorCount": 5,
+      "weight": 5.9523809523809526,
+      "flows": [
+        {
+          "name": "decrypt-integration-request-secure-attributes-flow",
+          "type": "FLOW",
+          "coverage": 0.0,
+          "messageProcessorCount": 4,
+          "coveredProcessorCount": 0
+        },
+        {
+          "name": "mule-integration-peopledoc-http-response-aggregator-flow",
+          "type": "FLOW",
+          "coverage": 100.0,
+          "messageProcessorCount": 1,
+          "coveredProcessorCount": 1
+        }
+      ]
+    },
+    {
+      "name": "mule-integration-peopledoc-organization.xml",
+      "flowCount": 2,
+      "coverage": 100.0,
+      "processorCount": 14,
+      "weight": 16.666666666666668,
+      "flows": [
+        {
+          "name": "mule-integration-peopledoc-organization-flow",
+          "type": "FLOW",
+          "coverage": 100.0,
+          "messageProcessorCount": 7,
+          "coveredProcessorCount": 7
+        },
+        {
+          "name": "mule-integration-peopledoc-organization-mapping-flow",
+          "type": "FLOW",
+          "coverage": 100.0,
+          "messageProcessorCount": 7,
+          "coveredProcessorCount": 7
+        }
+      ]
+    },
+    {
+      "name": "peopledoc-integration-message-processor.xml",
+      "flowCount": 1,
+      "coverage": 0.0,
+      "processorCount": 13,
+      "weight": 15.476190476190476,
+      "flows": [
+        {
+          "name": "peopledoc-integration-message-processorFlow",
+          "type": "FLOW",
+          "coverage": 0.0,
+          "messageProcessorCount": 13,
+          "coveredProcessorCount": 0
+        }
+      ]
+    }
+  ]
+}

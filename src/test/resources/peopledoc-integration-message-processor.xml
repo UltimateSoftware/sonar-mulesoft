@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ultimate-integrations="http://www.mulesoft.org/schema/mule/ultimate-integrations"
+	xmlns:amqp="http://www.mulesoft.org/schema/mule/amqp" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amqp/current/mule-amqp.xsd
+http://www.mulesoft.org/schema/mule/ultimate-integrations http://www.mulesoft.org/schema/mule/ultimate-integrations/current/mule-ultimate-integrations.xsd">
+	<flow name="peopledoc-integration-message-processorFlow" doc:id="73ae234c-75f7-49e4-99b5-32fca0189969" >
+		<amqp:listener doc:name="Listener" doc:id="39e99476-59ef-404b-9009-0f50faa8b447" queueName="${peopledoc.integration.queue}" createFallbackQueue="true" config-ref="AMQP_Config_Secure">
+			<amqp:fallback-queue-definition exchangeToBind="${amqp.exchange}"/>
+		</amqp:listener>
+		
+		<set-variable value="#[payload]" doc:name="Set Encrypted Integration Request" doc:id="4d1222cb-34c8-489a-9daa-e927d76adefa" variableName="integrationEncryptedRequest" mimeType="application/json"/>
+		<ultimate-integrations:notify doc:name="Notify Integration Started" doc:id="1c562205-e7f2-4f10-8c8e-7026712d669b" config-ref="Ultimate_Integrations_Config" jobId="#[vars.integrationEncryptedRequest.'jobId' default 'unknown']" tenantId="#[vars.integrationEncryptedRequest.'tenantId' default 'unknown']" integrationId="#[vars.integrationEncryptedRequest.'integrationId' default 'unknown']" dispatcherId="#[vars.integrationEncryptedRequest.'dispatchId' default 'unknown']" eventType="FLOW_RUN_STARTED_EVENT" />
+		<flow-ref doc:name="Decrypt Secure attributes" doc:id="6fde57aa-a8a5-4f3d-ba78-39fbd0b8ea41" name="decrypt-integration-request-secure-attributes-flow"/>
+		<set-variable value="#[payload]" doc:name="Set Integration Request" doc:id="9ccdbaaa-31a4-40e2-b8cf-b9316267c7d5" variableName="integrationRequest" mimeType="application/json" />
+		<flow-ref doc:name="mule-integration-peopledoc-user-profile-flow" doc:id="69a8076f-5d31-462f-bd44-ad1d011dfcf0" name="mule-integration-peopledoc-user-profile-flow" />
+		<flow-ref doc:name="mule-integration-peopledoc-organization-flow" doc:id="51971970-3d42-486e-bbf1-6c4eaa44f660" name="mule-integration-peopledoc-organization-flow" />
+		<flow-ref doc:name="mule-integration-peopledoc-demographic-information-flow" doc:id="0cf5dfff-2ae5-4ee8-ad16-6cffe0df3f42" name="mule-integration-peopledoc-demographic-information-flow"/>
+		<choice doc:name="Choice" doc:id="b05dd717-3168-4df4-8e7a-2fbb3bf80a02" >
+			<when expression='#[vars.peopledocOrganizationFileStatus.status =="SUCCESS" and vars.peopledocUserProfileFileStatus.status =="SUCCESS" and vars.peopledocDemographicInformationFileStatus.status == "SUCCESS"]'>
+					<ultimate-integrations:notify eventType="FLOW_RUN_SUCCEEDED_EVENT" doc:name="Notify integration Success" doc:id="115f4542-46e4-4f91-9a7a-c369d60b06f3" config-ref="Ultimate_Integrations_Config" jobId="#[vars.integrationEncryptedRequest.'jobId' default 'unknown']" tenantId="#[vars.integrationEncryptedRequest.'tenantId' default 'unknown']" integrationId="#[vars.integrationEncryptedRequest.'integrationId' default 'unknown']" dispatcherId="#[vars.integrationEncryptedRequest.'dispatchId' default 'unknown']"/>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Prepare Notification Failure message" doc:id="02cda32a-38ca-4cc3-824a-b5b26ea4f6de">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+						<ee:set-variable variableName="failureMessage" ><![CDATA[%dw 2.0
+output application/json
+ var orgFile ='Organization File Generation : '
+ var orgFileStatus = vars.peopledocOrganizationFileStatus.status
+ var userProfileFile ='|User Profile File Generation : '
+ var userProfileFileStatus = vars.peopledocUserProfileFileStatus.status
+ var demoInfoFile ='|Demographic Information File Generation : '
+ var demoInfoFileStatus = vars.peopledocDemographicInformationFileStatus.status
+---
+{
+	'details':
+	orgFile as String 
+	++ orgFileStatus as String
+	++ userProfileFile as String
+	++ userProfileFileStatus as String 
+	++ demoInfoFile as String
+	++ demoInfoFileStatus as String
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+				<ultimate-integrations:notify eventType="FLOW_RUN_FAILED_EVENT" doc:name="Notify integration failure" doc:id="71a3e28e-b8d9-453a-930c-95ea7ce3eb84" config-ref="Ultimate_Integrations_Config" jobId="#[vars.integrationEncryptedRequest.'jobId' default 'unknown']" tenantId="#[vars.integrationEncryptedRequest.'tenantId' default 'unknown']" integrationId="#[vars.integrationEncryptedRequest.'integrationId' default 'unknown']" dispatcherId="#[vars.integrationEncryptedRequest.'dispatchId' default 'unknown']" message="#[vars.failureMessage.details]" />
+			</otherwise>
+		</choice>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="e6e21d43-ce2d-4d47-ae3b-74de5e5e3e49" type="ANY">
+				<logger level="ERROR" doc:name="Log request" doc:id="b93aaa54-e589-4765-baf0-57d689bcab46" message="Error Occured for Tenant Id : #[vars.integrationEncryptedRequest.tenantId], Integration Id : #[vars.integrationEncryptedRequest.integrationId], Job Id : #[vars.integrationEncryptedRequest.jobId], Dispatch Id : #[vars.integrationEncryptedRequest.dispatchId] ***************** Error is ****************** : #[error]"/>
+				<amqp:publish config-ref="AMQP_Config_Secure" doc:name="Publish Exception to Message Recorder" doc:id="e96b6ee9-4227-48ac-a50f-76ae86629cda" exchangeName="${exceptions.exchange}">
+					<amqp:routing-keys>
+						<amqp:routing-key value="${exceptions.queue}" />
+					</amqp:routing-keys>
+					<amqp:message>
+						<amqp:body><![CDATA[#[%dw 2.0
+output application/json
+var tenantId = if(vars.integrationEncryptedRequest.tenantId != null) vars.integrationEncryptedRequest.tenantId else ""
+---
+{	
+	serviceName: "PeopleDoc",
+	originClass: "Namespace: " ++ error.errorType.parentErrorType.namespace ++ " Identifier: " ++ error.errorType.parentErrorType.identifier,
+	exceptionType: "Namespace: " ++ error.errorType.namespace ++ " Identifier: " ++ error.errorType.identifier,
+	message: "Tenant: " ++ tenantId ++ " Description: " ++ error.description ++ " Detailed description: " ++ error.detailedDescription ++ " Cause: " ++ error.cause.localizedMessage,
+	stacktrace: "",
+	timestamp: now() as Number{unit: "seconds"},
+	tenantId: tenantId
+
+}]]]></amqp:body>
+					</amqp:message>
+				</amqp:publish>
+				<ultimate-integrations:notify doc:name="Notify Integration Failed" doc:id="af8d912d-ff4e-4b63-8ab2-3e7858ae80ce" config-ref="Ultimate_Integrations_Config" jobId="#[vars.integrationEncryptedRequest.'jobId' default 'unknown']" tenantId="#[vars.integrationEncryptedRequest.'tenantId' default 'unknown']" integrationId="#[vars.integrationEncryptedRequest.'integrationId' default 'unknown']" dispatcherId="#[vars.integrationEncryptedRequest.'dispatchId' default 'unknown']" eventType="FLOW_RUN_FAILED_EVENT" message="#[error.exception.message]"/>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>

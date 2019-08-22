@@ -38,40 +38,36 @@ public class JsonParser {
         this.jsonReportPath = jsonReportPath;
     }
 
-    public List<SourceFile> parse() {
+    public List<SourceFile> parse() throws IOException {
         List<SourceFile> sourceFiles = new ArrayList<>();
-        try {
-            byte[] jsonData = Files.readAllBytes(Paths.get(this.jsonReportPath.toString()));
+        byte[] jsonData = Files.readAllBytes(Paths.get(this.jsonReportPath.toString()));
 
-            //create ObjectMapper instance
-            ObjectMapper objectMapper = new ObjectMapper();
+        //create ObjectMapper instance
+        ObjectMapper objectMapper = new ObjectMapper();
 
-            //convert json string to object
-            MunitReport mur = objectMapper.readValue(jsonData, MunitReport.class);
+        //convert json string to object
+        MunitReport mur = objectMapper.readValue(jsonData, MunitReport.class);
 
-            for (MunitFile file : mur.getFiles()) {
-                SourceFile sourceFile = new SourceFile("", file.getName());
-                int numOfLines = 0;
-                int covered = 0;
-                for (Flow flow : file.getFlows()) {
-                    numOfLines += flow.getMessageProcessorCount();
-                    covered += flow.getCoveredProcessorCount();
-                }
-                for (int i = 1; i <= numOfLines; i++) {
-                    sourceFile.lines().add(
-                            new Line(
-                                    i,
-                                    1,
-                                    i > covered ? 0 : 1,
-                                    0,
-                                    0
-                            ));
-                }
-
-                sourceFiles.add(sourceFile);
+        for (MunitFile file : mur.getFiles()) {
+            SourceFile sourceFile = new SourceFile("", file.getName());
+            int numOfLines = 0;
+            int covered = 0;
+            for (Flow flow : file.getFlows()) {
+                numOfLines += flow.getMessageProcessorCount();
+                covered += flow.getCoveredProcessorCount();
             }
-        } catch (IOException ex) {
-            ex.printStackTrace();
+            for (int i = 1; i <= numOfLines; i++) {
+                sourceFile.lines().add(
+                        new Line(
+                                i,
+                                i > covered ? 1 : 0,
+                                i > covered ? 0 : 1,
+                                0,
+                                0
+                        ));
+            }
+
+            sourceFiles.add(sourceFile);
         }
 
         return sourceFiles;

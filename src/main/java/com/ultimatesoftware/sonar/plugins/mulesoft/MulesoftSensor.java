@@ -19,6 +19,8 @@
  */
 package com.ultimatesoftware.sonar.plugins.mulesoft;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -71,7 +73,13 @@ public class MulesoftSensor implements Sensor {
     }
 
     void importReport(JsonParser reportParser, FileLocator locator, ReportImporter importer) {
-        List<JsonParser.SourceFile> sourceFiles = reportParser.parse();
+        List<JsonParser.SourceFile> sourceFiles;
+        try {
+            sourceFiles = reportParser.parse();
+        } catch(IOException e) {
+            LOG.error("Failed to parse report!");
+            return;
+        }
 
         for (JsonParser.SourceFile sourceFile : sourceFiles) {
             InputFile inputFile = locator.getInputFile(sourceFile.name());
