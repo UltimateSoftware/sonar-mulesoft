@@ -13,7 +13,6 @@ plugins {
     id 'maven-publish'
     id 'com.github.hierynomus.license' version '0.14.0'
     id "com.github.johnrengelman.shadow" version "5.1.0"
-    id 'distribution'
 }
 
 apply plugin: 'com.jfrog.artifactory'
@@ -102,16 +101,16 @@ jar {
                 'Implementation-Build': 'git rev-parse HEAD'.execute().text.trim(),
                 'Plugin-BuildDate': buildDate,
                 'Plugin-ChildFirstClassLoader': 'false',
-                'Plugin-Class': 'com.ultimatesoftware.sonar.plugins.mulesoft.MulesoftPlugin',
+                'Plugin-Class': 'com.ultimatesoftware.plugins.sonar.mulesoft.MulesoftPlugin',
                 'Plugin-Description': 'MuleSoft JSON report importer',
                 'Plugin-Display-Version': displayVersion,
-                'Plugin-IssueTrackerUrl': 'https://jira.sonarsource.com/browse/MULESOFT',
+                'Plugin-IssueTrackerUrl': 'https://github.com/UltimateSoftware/sonar-mulesoft',
                 'Plugin-Key': 'mulesoft',
                 'Plugin-License': 'GNU LGPL 3',
                 'Plugin-Name': 'Mulesoft',
                 'Plugin-Organization': 'SonarSource',
-                'Plugin-OrganizationUrl': 'http://www.sonarsource.com',
-                'Plugin-SourcesUrl': 'https://github.com/SonarSource/sonar-mulesoft',
+                'Plugin-OrganizationUrl': 'http://www.ultimatesoftware.com',
+                'Plugin-SourcesUrl': 'https://github.com/UltimateSoftware/sonar-mulesoft',
                 'Plugin-Version': version,
                 'Sonar-Version': '6.7',
                 'SonarLint-Supported': 'false',
@@ -153,7 +152,7 @@ artifactory {
         }
         defaults {
             properties = [
-                'build.name': 'sonar-mulesoft',
+                'build.name': 'sonar-mulesoft-plugin',
                 'build.number': (System.getenv('BUILD_ID') ?: System.getenv('BUILD_NUMBER')),
                 'pr.branch.target': System.getenv('PULL_REQUEST_BRANCH_TARGET'),
                 'pr.number': System.getenv('PULL_REQUEST_NUMBER'),
@@ -174,13 +173,4 @@ artifactory {
     // The name of this variable is important because it's used by the delivery process when extracting version from Artifactory build info.
     clientConfig.info.addEnvironmentProperty('PROJECT_VERSION', "${version}")
 
-}
-
-distributions {
-    main {
-        baseName = 'mulesoftPlugin'
-        contents {
-            from 'src/readme'
-        }
-    }
 }

@@ -1,2 +1,2 @@
 #!/bin/bash
-./gradlew clean api:artifactoryPublish
+./gradlew clean artifactoryPublish
