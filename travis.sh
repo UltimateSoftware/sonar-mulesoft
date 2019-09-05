@@ -8,5 +8,3 @@ function configureTravis {
 }
 
 configureTravis
-
-./gradlew test
