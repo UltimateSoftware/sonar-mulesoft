@@ -1,2 +1,2 @@
-#!/usr/bin/env bash
-.gradlew cleanTest test
+#!/bin/bash
+./gradlew cleanTest test

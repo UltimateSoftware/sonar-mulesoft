@@ -1,2 +1,2 @@
-#!/bin/#!/usr/bin/env sh
+#!/bin/bash
 ./gradlew shadowjar
