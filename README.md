@@ -26,3 +26,5 @@ MuleSoft source location (The location of your source XML files):
 ```bash
 sonar.coverage.mulesoft.xmlSourcePaths
 ```
+
+Release 0.1.0

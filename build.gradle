@@ -13,14 +13,14 @@ plugins {
     id 'maven-publish'
     id 'com.github.hierynomus.license' version '0.14.0'
     id "com.github.johnrengelman.shadow" version "5.1.0"
+    id 'distribution'
 }
 
 apply plugin: 'com.jfrog.artifactory'
-apply plugin: 'maven-publish'
 
 ext {
     release = project.hasProperty('release') && project.getProperty('release')
-    buildNumber = System.getProperty("buildNumber")
+    buildNumber = System.getProperty("BUILD_NUMBER")
 }
 // Replaces the version defined in sources, usually x.y-SNAPSHOT, by a version identifying the build.
 if (version.endsWith('-SNAPSHOT') && ext.buildNumber != null) {
@@ -174,4 +174,13 @@ artifactory {
     // The name of this variable is important because it's used by the delivery process when extracting version from Artifactory build info.
     clientConfig.info.addEnvironmentProperty('PROJECT_VERSION', "${version}")
 
+}
+
+distributions {
+    main {
+        baseName = 'mulesoftPlugin'
+        contents {
+            from 'src/readme'
+        }
+    }
 }
