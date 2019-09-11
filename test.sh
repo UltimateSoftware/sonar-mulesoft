@@ -1,4 +1,4 @@
 #!/bin/bash
 ./gradlew cleanTest check jacocoTestReport
-sonar-scanner
+sonar-scanner -X
 .gradlew its:test
