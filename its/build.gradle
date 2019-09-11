@@ -13,8 +13,6 @@ dependencies {
   testCompile 'com.google.code.findbugs:jsr305:2.0.2'
 }
 
-sonarqube.skipProject = true
-
 task integrationTest(type: Test) {
   systemProperty 'java.awt.headless', 'true'
 
