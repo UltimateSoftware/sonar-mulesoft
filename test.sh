@@ -1,3 +1,5 @@
 #!/bin/bash
 .gradlew shadowjar
-./gradlew cleanTest check jacocoTestReport
+ls
+./gradlew check jacocoTestReport
+ls
