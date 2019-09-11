@@ -11,7 +11,6 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'maven-publish'
-    id 'com.github.hierynomus.license' version '0.14.0'
     id "com.github.johnrengelman.shadow" version "5.1.0"
 }
 
@@ -74,21 +73,6 @@ dependencies {
     compileOnly 'org.sonarsource.sonarqube:sonar-plugin-api:7.7'
     testCompile 'org.sonarsource.sonarqube:sonar-plugin-api:7.7'
 
-} 
-
-license {
-    header = rootProject.file('LICENSE')
-    ext.year = Calendar.getInstance().get(Calendar.YEAR)
-    strictCheck true
-    mapping {
-      java = 'SLASHSTAR_STYLE'
-      js = 'SLASHSTAR_STYLE'
-      ts = 'SLASHSTAR_STYLE'
-      tsx = 'SLASHSTAR_STYLE'
-      css = 'SLASHSTAR_STYLE'
-      less = 'SLASHSTAR_STYLE'
-    }
-    excludes(['**/*.txt', '**/*.properties', '**/*.xml', '**/*.xsd', '**/*.html', '**/*.json', '**/*.sql', '**/*.rb', '**/*.vm', '**/*.snap', '**/*.svg', '**/*.jar', '**/*.zip', '**/*.log', '**/*.cnf', '**/*.jks', '**/README', '**/*.pdf'])
 }
 
 
