@@ -30,7 +30,9 @@ jobs:
   - stage: build
     script: "./build.sh"
   - stage: test
-    script: "./test.sh"
+    script:
+    - "./test.sh"
+    - sonar-scanner
   - stage: deploy_snapshot
     script: "./deploy_snapshot.sh"
   - stage: deploy
