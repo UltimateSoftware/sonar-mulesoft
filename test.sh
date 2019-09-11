@@ -1,2 +1,4 @@
 #!/bin/bash
-./gradlew cleanTest test
+./gradlew cleanTest check jacocoTestReport
+sonar-scanner
+.gradlew its:test
