@@ -6,7 +6,6 @@ buildscript {
   }
 }
 plugins {
-    id 'org.sonarqube' version '2.7.1'
     id 'java'
     id 'jacoco'
     id 'maven-publish'
@@ -42,13 +41,6 @@ allprojects {
         maven {
             url "https://repox.jfrog.io/repox/sonarsource"
         }
-    }
-}
-
-sonarqube {
-    properties {
-        property 'sonar.projectName', projectTitle
-        property 'sonar.projectKey', 'sonar-mulesoft'
     }
 }
 
