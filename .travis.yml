@@ -13,6 +13,9 @@ cache:
 notifications:
   email: false
   on_start: always
+addons:
+  sonarcloud:
+    organization: "UltimateSoftware"
 stages:
   - name: test
   - name: build
