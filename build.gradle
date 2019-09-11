@@ -48,7 +48,7 @@ allprojects {
 sonarqube {
     properties {
         property 'sonar.projectName', projectTitle
-        property 'sonar.projectKey', project.group + ':sonar-mulesoft'
+        property 'sonar.projectKey', 'sonar-mulesoft'
     }
 }
 
