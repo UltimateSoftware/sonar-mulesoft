@@ -1,5 +1,6 @@
 # SonarQube Mulesoft Plugin
-[![Build Status](https://travis-ci.org/UltimateSoftware/sonar-mulesoft.svg?branch=master)](https://travis-ci.org/UltimateSoftware/sonar-mulesoft)
+
+[![Build Status](https://travis-ci.org/UltimateSoftware/sonar-mulesoft.svg?branch=master)](https://travis-ci.org/UltimateSoftware/sonar-mulesoft) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=UltimateSoftware_sonar-mulesoft&metric=alert_status)](https://sonarcloud.io/dashboard?id=UltimateSoftware_sonar-mulesoft)
 
 A SonarQube Plugin for MuleSoft workflow projects. The plugin scans MuleSoft reports and provides coverage validation.
 

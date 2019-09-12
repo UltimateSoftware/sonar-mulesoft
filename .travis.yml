@@ -5,7 +5,7 @@ sudo: required
 jdk: oraclejdk9
 git:
   depth: false
-script: "./travis.sh"
+script: "./ci_scripts/travis.sh"
 cache:
   directories:
   - '$HOME/.sonar/cache'
@@ -29,15 +29,15 @@ stages:
 jobs:
   include:
   - stage: build
-    script: "./build.sh"
+    script: "./ci_scripts/build.sh"
   - stage: test
     script:
-    - "./test.sh"
+    - "./ci_scripts/test.sh"
     - sonar-scanner -X
   - stage: deploy_snapshot
-    script: "./deploy_snapshot.sh"
+    script: "./ci_scripts/deploy_snapshot.sh"
   - stage: deploy
-    script: "./deploy.sh"
+    script: "./ci_scripts/deploy.sh"
 env:
   global:
   - secure: H+GaDlBztCrYSlo6UQuCGm4lDKwV/0Wi9Hqknt25OIGf4tUgA4WFlK7+z1+Z0dPmoAfRj1ruqNBjNcDzxiEW2gJOfAj9CvvVA/ksqJtEjbaiiUlTPvQBCGlPfJHHMeYpYwh7q9HJaSnPnDao2o8sggKyWjErmZwPY3DpruHj5U861kwy5IAQ4S7kwrUzR0lsv2mnAOyDJKBLb/kku9FpeM+PiFXZxBRo66gBeTS/9m/khXVHKgUrrBAAn7FUAmhcvWb4H9TstF3pt4+uFuh9eTZBSKttvJla7MI4DeqtWAH5N9NqXeiDXpA8K7GBk31TpYd7LUj0Ul1J6W1VtRO1wHyfB1lSLe9xMHUa4/jMdvxjV8v33QFh2g34PFnCBCwlvG+6i890E3ntlk5LtvJHNOWnG7GMoqwBgHEIenYtsWIhhsBxHbM9VSwi98By/L+ap4sbLjP83rq3QAruZo8UFYbLMgSF5czXFtz5N2+D0F7ORLm+H8Ss1UTgsCuB6mUbL9XpFzLToGwZDYJxZbdnT2RyOyxTBd7rD06JOIgkEyExbj9aj99bt0L/AnrwcatOHz2tAv7ww1wxUUZE/kWr9CRQO1z2V85kL5Z7Cz2sHcgrSkVKxQt3IfdqaenBRzpKKnXgrUsdJtXvsFTjaKq2+kyhT5PW+SX8445nHEs3roI=
