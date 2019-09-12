@@ -1,5 +1,3 @@
 #!/bin/bash
-.gradlew shadowjar
-ls build
+./gradlew shadowjar
 ./gradlew check jacocoTestReport
-ls build
