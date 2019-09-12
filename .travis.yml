@@ -1,13 +1,14 @@
 language: java
 dist: trusty
 install: true
+sudo: required
 jdk: oraclejdk9
 git:
   depth: false
 script: "./travis.sh"
 cache:
   directories:
-  - "$HOME/.sonar"
+  - '$HOME/.sonar/cache'
   - "$HOME/.gradle/caches/"
   - "$HOME/.gradle/wrapper/"
 notifications:
@@ -17,7 +18,7 @@ addons:
   sonarcloud:
     organization: "ultimatesoftware"
     token:
-      secure: "MznXvxN2zelO+vyFRSqW28yq6lS3sa4lO0Ne8s67A5dbZ8wzN1Qruo7uh6hLhRQVvZ2YyeLD/QSowsGRAZF7I0Dwj8lNhB52DKTHF1j4/0AC9jlqI975Nv5Ib0ARaQyCqBh1v1aksAwwHT5YGF9bwD8Fb89jm8N/wr9iLsrhq/FmqFmjvwciPDeMGoroK9pR1pCgch8EHjBWI46DAL+9x3ClPvYnbqJyGS/p681UeTXhHZu0ccdPTgHgqsWtOMvS2bMt60k+NzLWOyy2/9qgalmQYdfqBusnU45CoH4RuZJ5wx8pgpriGbCjSR//xiUDJJCxC0PkYZ5yLt+1cSccwTscusqbOtpFqvE4gJA1Zm6WK+0PfAHbhgLoBO/yI0SCTNta2YwbRDjYHNn614MzI9tNOtGs/Ve0DMSDFTRWbcnBgkpL6tae1AYnD9pbyIzRhIw3fPlII5+rlA+XKEpZEj3rexAhKIpFchJtONAHL9ZmHopGzOLfp9A0EkypSjNz/bD+jPJOWAAL6FnU66vWkajJLo+DSPrWIxIX9IEGRUFEfSQtbScjNwjuDHKO6p4tazZ0erUC6IbPWsCydYxKgJIXfSnFHibQsC51BTPXZv42En5OOOIVwbZBnWX55BDmLcqmTbpNcLMeA2m4gX2g0uQS8SDVWSEd9I43jdGJRUM="
+      secure: "dz8GJHs67IOOhCGrz3PTywc++dfq3JqnZAZGohXaAWv0A18LxNeYWJpXCgTAZV773yVpg5h23bj5ezH1o5RGyLB+5icVWV6eG+NOJE/sTQesOO+d5fn0mI+EASdMnUxcZ5Se3sH8jSKbDZ6Wt3XyikqZ4yEpyII7NqKIoGcGsCF1jH5lQlaiJ1EZJNwYVXaDhg2vwwR6JcpARuwquIcnwpOp9OUfAyd5d7SqaRzyN5G2mM2btW3dIz+MOtSUVcy68g7KQWEh4fsdfIS9T3PhCbCa/WpZe3nOzlZhresn4sGGXoOX5uUxqs8aQKtrPJAMwTS/In3yNIo3x6louEmvbLcQd6tVNJn5XFgST+npmWcsus3wd7LdYbqnMKCdLf0Nc5+IimElgtp/MatuMkokkq2GtGYVoz33kOGBzKYAlrv08OIPN7CGfQj95ayd223c7mCMHhHk6dxRNjA8YcNa53A+v8I8qFzBql8DsrUJi6Oi9Rtc0qj7aqye/mAu0oTBcyrZVxlVyBICS2nSwSZ5Yn3w2KNa0/ruvQ1DGY3iEmRzsHrBw7LSmQvR70m6X7WYIYfu8v6yhRCxFbwCMlswv1GM4BYYMl0ySSjGq5foU0iLUwLRup0NSlPDi3ovGFCQvstqKRXQS0zv/15CUln/kGmbHW017AwHTVoXvaEP0zI="
 stages:
 - name: test
 - name: build
