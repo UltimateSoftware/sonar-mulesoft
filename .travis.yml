@@ -32,7 +32,7 @@ jobs:
   - stage: test
     script:
     - "./test.sh"
-    - sonar-scanner
+    - sonar-scanner -X
   - stage: deploy_snapshot
     script: "./deploy_snapshot.sh"
   - stage: deploy
