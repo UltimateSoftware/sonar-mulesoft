@@ -22,6 +22,13 @@ if (version.endsWith('-SNAPSHOT') && ext.buildNumber != null) {
     version = version.replace('-SNAPSHOT', versionSuffix)
 }
 
+SONATYPE_NEXUS_USERNAME = "$System.env.SONATYPE_NEXUS_USERNAME"
+SONATYPE_NEXUS_PASSWORD = "$System.env.SONATYPE_NEXUS_PASSWORD"
+
+signing.keyId = "$System.env.KEY_ID"
+signing.password = "$System.env.KEY_PASSWORD"
+signing.secretKeyRingFile = secring.gpg
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 tasks.withType(JavaCompile) {
