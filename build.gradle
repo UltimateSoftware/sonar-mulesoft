@@ -102,7 +102,7 @@ gradle.taskGraph.whenReady { taskGraph ->
     if (taskGraph.allTasks.any { it instanceof Sign }) {
         def id = System.getProperty("KEY_ID")
         def password = System.getProperty("KEY_PASSWORD")
-        def file = secring.gpg
+        def file = "secring.gpg"
         allprojects {
             ext."signing.keyId" = id
             ext."signing.secretKeyRingFile" = file

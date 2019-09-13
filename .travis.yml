@@ -23,15 +23,12 @@ addons:
       secure: dz8GJHs67IOOhCGrz3PTywc++dfq3JqnZAZGohXaAWv0A18LxNeYWJpXCgTAZV773yVpg5h23bj5ezH1o5RGyLB+5icVWV6eG+NOJE/sTQesOO+d5fn0mI+EASdMnUxcZ5Se3sH8jSKbDZ6Wt3XyikqZ4yEpyII7NqKIoGcGsCF1jH5lQlaiJ1EZJNwYVXaDhg2vwwR6JcpARuwquIcnwpOp9OUfAyd5d7SqaRzyN5G2mM2btW3dIz+MOtSUVcy68g7KQWEh4fsdfIS9T3PhCbCa/WpZe3nOzlZhresn4sGGXoOX5uUxqs8aQKtrPJAMwTS/In3yNIo3x6louEmvbLcQd6tVNJn5XFgST+npmWcsus3wd7LdYbqnMKCdLf0Nc5+IimElgtp/MatuMkokkq2GtGYVoz33kOGBzKYAlrv08OIPN7CGfQj95ayd223c7mCMHhHk6dxRNjA8YcNa53A+v8I8qFzBql8DsrUJi6Oi9Rtc0qj7aqye/mAu0oTBcyrZVxlVyBICS2nSwSZ5Yn3w2KNa0/ruvQ1DGY3iEmRzsHrBw7LSmQvR70m6X7WYIYfu8v6yhRCxFbwCMlswv1GM4BYYMl0ySSjGq5foU0iLUwLRup0NSlPDi3ovGFCQvstqKRXQS0zv/15CUln/kGmbHW017AwHTVoXvaEP0zI=
 stages:
 - name: test
-- name: build
 - name: deploy_snapshot
   if: branch = development OR branch = feature/travis
 - name: deploy
   if: branch = master
 jobs:
   include:
-  - stage: build
-    script: "./ci_scripts/build.sh"
   - stage: test
     script:
     - "./ci_scripts/test.sh"
