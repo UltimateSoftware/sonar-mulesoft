@@ -2,7 +2,7 @@ plugins {
   id "java"
 }
 
-description = 'SonarQube JaCoCo :: Integration Tests'
+description = 'SonarQube Mulesoft :: Integration Tests'
 
 dependencies {
   testCompile 'junit:junit:4.12'
