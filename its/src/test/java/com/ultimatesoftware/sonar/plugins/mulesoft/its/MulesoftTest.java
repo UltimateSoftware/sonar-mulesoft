@@ -90,7 +90,7 @@ public class MulesoftTest {
   }
 
   @Test
-  public void should_not_import_coverage_if_no_property_given() throws IOException {
+  public void should_import_coverage_if_no_property_given_and_default_is_correct() throws IOException {
     SonarScanner build = SonarScanner.create()
       .setProjectKey(PROJECT_KEY)
       .setDebugLogs(true)
@@ -100,7 +100,8 @@ public class MulesoftTest {
       .setProperty("sonar.java.binaries", ".")
       .setProjectDir(prepareProject("project"));
     orchestrator.executeBuild(build);
-    checkNoMulesoftCoverage();
+    checkCoveredFile();
+    checkUncoveredFile();
   }
 
   @Test
