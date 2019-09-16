@@ -25,7 +25,7 @@ stages:
 - name: test
 - name: integration_test
 - name: deploy_snapshot
-  if: branch = development OR branch = feature/travis
+  if: branch = development
 - name: deploy
   if: branch = master
 jobs:
