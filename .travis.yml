@@ -32,11 +32,13 @@ jobs:
   include:
   - stage: test
     script:
-    - "./ci_scripts/test.sh"
+    - "./gradlew shadowjar"
+    - "./gradlew check jacocoTestReport"
     - sonar-scanner -X
   - stage: integration_test
     script:
-    - "./ci_scripts/integration_test.sh"
+    - "./gradlew shadowjar"
+    - "./gradlew its:integrationTest"
   - stage: deploy_snapshot
     script: "./ci_scripts/deploy_snapshot.sh"
   - stage: deploy
