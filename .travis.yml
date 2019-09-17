@@ -4,7 +4,7 @@ install: true
 before_install:
   - openssl aes-256-cbc -K $encrypted_2ed9e0b2bf4a_key -iv $encrypted_2ed9e0b2bf4a_iv -in secring.gpg.enc -out secring.gpg -d
 sudo: required
-jdk: openjdk11
+jdk: openjdk8
 git:
   depth: false
 script: "./ci_scripts/travis.sh"
@@ -38,7 +38,7 @@ jobs:
   - stage: integration_test
     script:
     - "./gradlew shadowjar"
-    - "./gradlew its:integrationTest"
+    - "./gradlew its:integrationTest --debug"
   - stage: deploy_snapshot
     script: "./ci_scripts/deploy_snapshot.sh"
   - stage: deploy
