@@ -48,6 +48,7 @@ public class MulesoftTest {
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", defaultRuntimeVersion));
 
     File folder = new File("../build/libs");
+    System.out.println(folder.getAbsolutePath());
     File[] listOfFiles = folder.listFiles();
 
     for (int i = 0; i < listOfFiles.length; i++) {
