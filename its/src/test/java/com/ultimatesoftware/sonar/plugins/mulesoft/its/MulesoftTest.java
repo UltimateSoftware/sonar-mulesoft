@@ -47,7 +47,7 @@ public class MulesoftTest {
       .setOrchestratorProperty("orchestrator.workspaceDir", "build")
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", defaultRuntimeVersion));
 
-    System.out.println(new File("../build/libs").getAbsolutePath());
+    System.out.println(" Hola!!!!" + new File("../build/libs").getAbsolutePath());
     Location pluginLocation = FileLocation.byWildcardMavenFilename(new File("../build/libs"), "sonar-mulesoft-*.jar");
     builder.addPlugin(pluginLocation);
     try {

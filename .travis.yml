@@ -38,7 +38,7 @@ jobs:
     script:
     - "./ci_scripts/travis.sh"
     - "./gradlew shadowjar"
-    - "./gradlew its:integrationTest --stacktrace"
+    - "./gradlew its:integrationTest --debug"
   - stage: deploy_snapshot
     script: "./ci_scripts/deploy_snapshot.sh"
   - stage: deploy
