@@ -7,7 +7,6 @@ sudo: required
 jdk: openjdk8
 git:
   depth: false
-script: "./ci_scripts/travis.sh"
 cache:
   directories:
   - "$HOME/.sonar/cache"
@@ -37,8 +36,9 @@ jobs:
     - sonar-scanner -X
   - stage: integration_test
     script:
+    - "./ci_scripts/travis.sh"
     - "./gradlew shadowjar"
-    - "./gradlew its:integrationTest --debug"
+    - "./gradlew its:integrationTest --stacktrace"
   - stage: deploy_snapshot
     script: "./ci_scripts/deploy_snapshot.sh"
   - stage: deploy
