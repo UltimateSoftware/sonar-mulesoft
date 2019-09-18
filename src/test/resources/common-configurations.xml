@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:sftp="http://www.mulesoft.org/schema/mule/sftp" 
+	xmlns:java="http://www.mulesoft.org/schema/mule/java"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" 
+	xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:amqp="http://www.mulesoft.org/schema/mule/amqp" 
+	xmlns="http://www.mulesoft.org/schema/mule/core" 
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ultimate-integrations="http://www.mulesoft.org/schema/mule/ultimate-integrations" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sftp/current/mule-sftp.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd 
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amqp/current/mule-amqp.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/ultimate-integrations http://www.mulesoft.org/schema/mule/ultimate-integrations/current/mule-ultimate-integrations.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+
+	<configuration-properties doc:name="Configuration properties" file="config-${muleenv}.properties" />
+
+	<http:request-config name="Test_Configuration_Request_Configuration" doc:name="HTTP Request configuration" basePath="${http.request.configuration.base.path}" >
+		<http:request-connection host="#[vars.integrationRequest.'hxBase']" protocol="HTTP">
+			<reconnection >
+				<reconnect frequency="${http.request.reconnection.frequency}" count="${http.request.reconnection.attempts}" />
+			</reconnection>
+		</http:request-connection>
+	</http:request-config>
+	
+	<http:request-config name="Test _Configuration_Secure" doc:name="HTTP Request configuration" basePath="${http.request.configuration.base.path}" >
+		<http:request-connection host="#[vars.integrationRequest.'hxBase']" protocol="HTTPS">
+			<reconnection >
+				<reconnect frequency="${http.request.reconnection.frequency}" count="${http.request.reconnection.attempts}" />
+			</reconnection>
+		</http:request-connection>
+	</http:request-config>
+	
+	<http:request-config name="Test_Request_Configuration" doc:name="HTTP Request configuration" basePath="${http.request.personnel.base.path}" >
+		<http:request-connection host="#[vars.integrationRequest.'hxBase']" protocol="HTTP">
+			<reconnection >
+				<reconnect frequency="${http.request.reconnection.frequency}" count="${http.request.reconnection.attempts}" />
+			</reconnection>
+		</http:request-connection>
+	</http:request-config>
+	
+	<http:request-config name="Test_Request_Configuration_Secure" doc:name="HTTP Request configuration" basePath="${http.request.personnel.base.path}" >
+		<http:request-connection host="#[vars.integrationRequest.'hxBase']" protocol="HTTPS">
+			<reconnection >
+				<reconnect frequency="${http.request.reconnection.frequency}" count="${http.request.reconnection.attempts}" />
+			</reconnection>
+		</http:request-connection>
+	</http:request-config>
+	
+	<configuration-properties doc:name="Configuration properties"  file="country-map.properties" />
+	<configuration-properties doc:name="Configuration properties"  file="config.properties" />
+	<flow name="test-http-response-aggregator-flow" >
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate"  type="ANY"/>
+		</error-handler>
+	</flow>
+	
+	<flow name="integration-request-secure-attributes-flow" >
+		<logger level="INFO" doc:name="Logger" />
+
+		<ee:transform doc:name="Build Integration Request"  >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	alias: vars.alias,
+	
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" />
+		<error-handler>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" type="ANY"/>
+		</error-handler>
+	</flow>
+</mule>

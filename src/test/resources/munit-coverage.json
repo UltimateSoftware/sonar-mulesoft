@@ -1,0 +1,50 @@
+{
+  "coverage": 75.0,
+  "requiredApplicationCoverage": -1.0,
+  "requiredResourceCoverage": -1.0,
+  "requiredFlowCoverage": -1.0,
+  "flowCount": 11,
+  "processorCount": 84,
+  "coveredProcessorCount": 63,
+  "files": [
+    {
+      "name": "test-upload-file.xml",
+      "flowCount": 1,
+      "coverage": 100.0,
+      "processorCount": 7,
+      "weight": 8.333333333333334,
+      "flows": [
+        {
+          "name": "peopledoc-integration-upload-fileFlow",
+          "type": "FLOW",
+          "coverage": 100.0,
+          "messageProcessorCount": 7,
+          "coveredProcessorCount": 7
+        }
+      ]
+    },
+    {
+      "name": "common-configurations.xml",
+      "flowCount": 2,
+      "coverage": 20.0,
+      "processorCount": 5,
+      "weight": 5.9523809523809526,
+      "flows": [
+        {
+          "name": "integration-request-secure-attributes-flow",
+          "type": "FLOW",
+          "coverage": 0.0,
+          "messageProcessorCount": 4,
+          "coveredProcessorCount": 0
+        },
+        {
+          "name": "test-http-response-aggregator-flow",
+          "type": "FLOW",
+          "coverage": 100.0,
+          "messageProcessorCount": 1,
+          "coveredProcessorCount": 1
+        }
+      ]
+    }
+  ]
+}
