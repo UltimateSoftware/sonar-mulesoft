@@ -88,7 +88,7 @@ jar {
                 'Plugin-OrganizationUrl': 'http://www.ultimatesoftware.com',
                 'Plugin-SourcesUrl': 'https://github.com/UltimateSoftware/sonar-mulesoft',
                 'Plugin-Version': version,
-                'Sonar-Version': '6.7',
+                'Sonar-Version': '7.9',
                 'SonarLint-Supported': 'false',
                 'Version': "${version}",
         )
