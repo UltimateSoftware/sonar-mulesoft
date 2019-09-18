@@ -25,7 +25,7 @@ stages:
 - name: deploy_snapshot
   if: branch = development
 - name: deploy
-  if: branch = master
+  if: branch = master AND type != pull_request
 jobs:
   include:
   - stage: test
