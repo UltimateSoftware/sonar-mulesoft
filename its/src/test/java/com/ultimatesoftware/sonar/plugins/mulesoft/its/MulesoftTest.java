@@ -42,7 +42,7 @@ public class MulesoftTest {
   public TemporaryFolder temp = new TemporaryFolder();
 
   static {
-    String defaultRuntimeVersion = "true".equals(System.getenv("SONARSOURCE_QA")) ? null : "7.9";
+    String defaultRuntimeVersion = "7.9";
     OrchestratorBuilder builder = Orchestrator.builderEnv()
       .setOrchestratorProperty("orchestrator.workspaceDir", "build")
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", defaultRuntimeVersion));
