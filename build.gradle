@@ -4,31 +4,35 @@ buildscript {
       url 'https://repox.jfrog.io/repox/plugins.gradle.org/'
     }
   }
+dependencies {
+    classpath 'com.vanniktech:gradle-maven-publish-plugin:0.8.0'
+}
 }
 plugins {
     id 'java'
     id 'jacoco'
-    id 'maven-publish'
+    id 'signing'
     id "com.github.johnrengelman.shadow" version "5.1.0"
 }
+
+apply plugin: "com.vanniktech.maven.publish"
 
 ext {
     release = project.hasProperty('release') && project.getProperty('release')
     buildNumber = System.getProperty("BUILD_NUMBER")
 }
+
 // Replaces the version defined in sources, usually x.y-SNAPSHOT, by a version identifying the build.
 if (version.endsWith('-SNAPSHOT') && ext.buildNumber != null) {
     def versionSuffix = (version.toString().count('.') == 1 ? ".0.${ext.buildNumber}" : ".${ext.buildNumber}")
     version = version.replace('-SNAPSHOT', versionSuffix)
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+
+sourceCompatibility = 11
+targetCompatibility = 11
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
-    if (JavaVersion.current().isJava9Compatible()) {
-        options.compilerArgs.addAll(['--release', '8'])
-    }
 }
 
 tasks.withType(Javadoc) {
@@ -59,11 +63,10 @@ dependencies {
     testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'org.assertj:assertj-core:3.10.0'
     compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
-    compileOnly 'org.sonarsource.sonarqube:sonar-plugin-api:7.7'
-    testCompile 'org.sonarsource.sonarqube:sonar-plugin-api:7.7'
+    compileOnly 'org.sonarsource.sonarqube:sonar-plugin-api:7.9'
+    testCompile 'org.sonarsource.sonarqube:sonar-plugin-api:7.9'
 
 }
-
 
 jar {
     manifest {
@@ -74,7 +77,7 @@ jar {
                 'Implementation-Build': 'git rev-parse HEAD'.execute().text.trim(),
                 'Plugin-BuildDate': buildDate,
                 'Plugin-ChildFirstClassLoader': 'false',
-                'Plugin-Class': 'com.ultimatesoftware.plugins.sonar.mulesoft.MulesoftPlugin',
+                'Plugin-Class': 'com.ultimatesoftware.sonar.plugins.mulesoft.MulesoftPlugin',
                 'Plugin-Description': 'MuleSoft JSON report importer',
                 'Plugin-Display-Version': displayVersion,
                 'Plugin-IssueTrackerUrl': 'https://github.com/UltimateSoftware/sonar-mulesoft',
@@ -85,30 +88,22 @@ jar {
                 'Plugin-OrganizationUrl': 'http://www.ultimatesoftware.com',
                 'Plugin-SourcesUrl': 'https://github.com/UltimateSoftware/sonar-mulesoft',
                 'Plugin-Version': version,
-                'Sonar-Version': '6.7',
+                'Sonar-Version': '7.9',
                 'SonarLint-Supported': 'false',
                 'Version': "${version}",
         )
     }
 }
 
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allJava
-    classifier = 'sources'
-}
-
-task javadocJar(type: Jar) {
-    from javadoc
-    classifier = 'javadoc'
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-
-            artifact tasks.sourcesJar
-            artifact tasks.javadocJar
+gradle.taskGraph.whenReady { taskGraph ->
+    if (taskGraph.allTasks.any { it instanceof Sign }) {
+        def id = System.getProperty("KEY_ID")
+        def password = System.getProperty("KEY_PASSWORD")
+        def file = "secring.gpg"
+        allprojects {
+            ext."signing.keyId" = id
+            ext."signing.secretKeyRingFile" = file
+            ext."signing.password" = password
         }
     }
 }

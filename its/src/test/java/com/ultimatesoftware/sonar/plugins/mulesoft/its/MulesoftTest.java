@@ -42,11 +42,22 @@ public class MulesoftTest {
   public TemporaryFolder temp = new TemporaryFolder();
 
   static {
-    String defaultRuntimeVersion = "true".equals(System.getenv("SONARSOURCE_QA")) ? null : "7.7";
+    String defaultRuntimeVersion = "7.9";
     OrchestratorBuilder builder = Orchestrator.builderEnv()
       .setOrchestratorProperty("orchestrator.workspaceDir", "build")
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", defaultRuntimeVersion));
 
+    File folder = new File("../build/libs");
+    System.out.println(folder.getAbsolutePath());
+    File[] listOfFiles = folder.listFiles();
+
+    for (int i = 0; i < listOfFiles.length; i++) {
+      if (listOfFiles[i].isFile()) {
+        System.out.println("File " + listOfFiles[i].getName());
+      } else if (listOfFiles[i].isDirectory()) {
+        System.out.println("Directory " + listOfFiles[i].getName());
+      }
+    }
     Location pluginLocation = FileLocation.byWildcardMavenFilename(new File("../build/libs"), "sonar-mulesoft-*.jar");
     builder.addPlugin(pluginLocation);
     try {
@@ -90,7 +101,7 @@ public class MulesoftTest {
   }
 
   @Test
-  public void should_not_import_coverage_if_no_property_given() throws IOException {
+  public void should_import_coverage_if_no_property_given_and_default_is_correct() throws IOException {
     SonarScanner build = SonarScanner.create()
       .setProjectKey(PROJECT_KEY)
       .setDebugLogs(true)
@@ -100,7 +111,8 @@ public class MulesoftTest {
       .setProperty("sonar.java.binaries", ".")
       .setProjectDir(prepareProject("project"));
     orchestrator.executeBuild(build);
-    checkNoMulesoftCoverage();
+    checkCoveredFile();
+    checkUncoveredFile();
   }
 
   @Test
