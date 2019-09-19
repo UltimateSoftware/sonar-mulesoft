@@ -9,7 +9,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amqp/current/mule-amqp.xsd">
 	<flow name="test-message-processorFlow" >
 		
-		<set-variable value="#[payload]" doc:name="Set Encrypted Integration Request" variableName="integrationEncryptedRequest" mimeType="application/json"/>
+		<set-variable value="#[payload]" doc:name="Set Integration Request" variableName="integrationRequest" mimeType="application/json"/>
 
 		<flow-ref doc:name="Get attributes" name="integration-request-attributes-flow"/>
 		<set-variable value="#[payload]" doc:name="Set Integration Request" variableName="integrationRequest" mimeType="application/json" />
