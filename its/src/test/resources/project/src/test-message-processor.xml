@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ultimate-integrations="http://www.mulesoft.org/schema/mule/ultimate-integrations"
+	xmlns:amqp="http://www.mulesoft.org/schema/mule/amqp" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amqp/current/mule-amqp.xsd">
+	<flow name="test-message-processorFlow" >
+		
+		<set-variable value="#[payload]" doc:name="Set Encrypted Integration Request" variableName="integrationEncryptedRequest" mimeType="application/json"/>
+
+		<flow-ref doc:name="Get attributes" name="integration-request-attributes-flow"/>
+		<set-variable value="#[payload]" doc:name="Set Integration Request" variableName="integrationRequest" mimeType="application/json" />
+		<flow-ref doc:name="test-user-profile-flow" name="test-user-profile-flow" />
+		<flow-ref doc:name="test-organization-flow" name="test-organization-flow" />
+		<flow-ref doc:name="test-demographic-information-flow" name="test-demographic-information-flow"/>
+		<choice doc:name="Choice" >
+
+			<otherwise >
+				<ee:transform doc:name="Prepare Notification Failure message">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+						<ee:set-variable variableName="failureMessage" ></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+			</otherwise>
+		</choice>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" type="ANY">
+				<logger level="ERROR" doc:name="Log request"/>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>

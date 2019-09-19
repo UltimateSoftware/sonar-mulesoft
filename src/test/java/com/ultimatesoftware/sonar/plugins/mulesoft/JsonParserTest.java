@@ -50,8 +50,8 @@ public class JsonParserTest {
     JsonParser report = new JsonParser(sample);
     List<JsonParser.SourceFile> sourceFiles = report.parse();
 
-    assertThat(sourceFiles).hasSize(6);
-    assertThat(sourceFiles.stream().mapToInt(sf -> sf.lines().size()).sum()).isEqualTo(84);
+    assertThat(sourceFiles).hasSize(2);
+    assertThat(sourceFiles.stream().mapToInt(sf -> sf.lines().size()).sum()).isEqualTo(12);
   }
 
   @Test
@@ -60,8 +60,8 @@ public class JsonParserTest {
     JsonParser report = new JsonParser(sample);
     List<JsonParser.SourceFile> sourceFiles = report.parse();
 
-    assertThat(sourceFiles).hasSize(6);
-    assertThat(sourceFiles.stream().mapToInt(sf -> sf.lines().size()).sum()).isEqualTo(84);
+    assertThat(sourceFiles).hasSize(2);
+    assertThat(sourceFiles.stream().mapToInt(sf -> sf.lines().size()).sum()).isEqualTo(12);
     assertThat(sourceFiles.get(0).name()).isEqualTo("test-upload-file.xml");
     assertThat(sourceFiles.get(0).packageName()).isEqualTo("");
     assertThat(sourceFiles.get(0).lines().size()).isEqualTo(7);

@@ -10,7 +10,7 @@ http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/fil
 		<logger level="DEBUG" doc:name="Logger" message='Request to write file contents to  #[vars.integrationRequest.fileTransferFields.fileDestination]' />
 		<choice doc:name="Configure path different for dev" >
 			<when expression='#[vars.integrationRequest.fileTransferFields.fileDestination == "sftp-dev"]'>
-				<set-variable value='#[output application/java --- vars.integrationRequest.alias ++ "/" ++ vars.fileDetails.directory ++ "/" ++ vars.fileDetails.fileName]' doc:name="Set file path with tenant alias" variableName="filepath" />
+				<set-variable value='#[output application/java --- vars.integrationRequest.alias ++ "/" ++ vars.fileDetails.directory ++ "/" ++ vars.fileDetails.fileName]' variableName="filepath" />
 			</when>
 			<otherwise >
 				<set-variable value='#[output application/java --- vars.fileDetails.directory ++ "/" ++ vars.fileDetails.fileName]' doc:name="Set file path" variableName="filepath" />

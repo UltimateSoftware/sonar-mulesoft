@@ -32,8 +32,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class MulesoftTest {
   private final static String PROJECT_KEY = "mulesoft-project";
-  private static final String FILE_KEY = "mulesoft-project:src/mule-integration-peopledoc-demographic-information.xml";
-  private static final String FILE_WITHOUT_COVERAGE_KEY = "mulesoft-project:src/peopledoc-integration-message-processor.xml";
+  private static final String FILE_KEY = "mulesoft-project:src/test-demographic-information.xml";
+  private static final String FILE_WITHOUT_COVERAGE_KEY = "mulesoft-project:src/test-message-processor.xml";
 
   @ClassRule
   public static Orchestrator orchestrator;

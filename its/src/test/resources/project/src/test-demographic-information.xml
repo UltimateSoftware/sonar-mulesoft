@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:java="http://www.mulesoft.org/schema/mule/java"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:amqp="http://www.mulesoft.org/schema/mule/amqp" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amqp/current/mule-amqp.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	
+	<flow name="test--demographic-information-flow" >
+		<flow-ref doc:name="details Response Aggregation" name="test-http-response-aggregator-flow" target="Response" targetValue="#[payload]"/>
+		<ee:transform doc:name="Create UserId-UserKey Map">
+							<ee:message>
+							</ee:message>
+							<ee:variables>
+								<ee:set-variable variableName="UserIdAndKeyMap"></ee:set-variable>
+							</ee:variables>
+						</ee:transform>
+		<flow-ref doc:name="Call mapping flow" name="test-demographic-information-mapping-flow"/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" type="ANY">
+				<logger level="ERROR" doc:name="Log request" />
+				<set-variable value='#[%dw 2.0
+output application/json
+{
+	"status" : "FAILURE : "++ error.exception.message
+}]' doc:name="Set File Generation status" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	
+	<flow name="test--demographic-information-mapping-flow" >
+		<logger level="DEBUG" doc:name="Logger"  />
+		<ee:transform doc:name="Create list of all email addresses" >
+			<ee:message >
+				<ee:set-payload >></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="DEBUG" doc:name="Logger" />
+		<java:invoke-static doc:name="Gather duplicate email addresses">
+			<java:args ><![CDATA[#[{arg0: payload}]]]></java:args>
+		</java:invoke-static>
+		<logger level="DEBUG" doc:name="Logger" />
+		<ee:transform doc:name="Map response" >
+			<ee:message>
+				<ee:set-payload></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		
+		<logger level="INFO" doc:name="Log file Contents" />
+		<set-variable value="#[payload]" doc:name="Set file contents"  variableName="fileContents"/>
+		<ee:transform doc:name="set file name"  >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="fileDetails" ></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+
+		<flow-ref doc:name="Upload File"  name="test-upload-fileFlow"/>
+		<set-variable value='#[%dw 2.0
+output application/json
+
+---
+{
+	"status" : "SUCCESS"
+}]' doc:name="Set File generation status" variableName="peopledocDemographicInformationFileStatus"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate type="ANY"/>
+		</error-handler>
+	</flow>
+	<flow name="location-lookup" >
+		<set-variable value=""/>
+		<logger level="INFO" doc:name="Logger"  />
+		<choice doc:name="Choice" >
+			<when expression="#[vars.integrationRequest.'hxScheme'=='https']">
+			</when>
+			<otherwise>
+
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger"/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue - Return Blank State" type="ANY" >
+				<logger level="ERROR" doc:name="Log request"  />
+
+				<set-payload value='{"state":""}' doc:name="Set State field to empty string" mimeType="application/json"/>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+
+</mule>

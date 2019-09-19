@@ -1,0 +1,57 @@
+{
+  "coverage": 58.54,
+  "requiredApplicationCoverage": -1.0,
+  "requiredResourceCoverage": -1.0,
+  "requiredFlowCoverage": -1.0,
+  "flowCount": 4,
+  "processorCount": 41,
+  "coveredProcessorCount": 24,
+  "files": [
+    {
+      "name": "test-demographic-information.xml",
+      "flowCount": 3,
+      "coverage": 85.71428571428571,
+      "processorCount": 28,
+      "weight": 33.333333333333336,
+      "flows": [
+        {
+          "name": "location-lookup",
+          "type": "FLOW",
+          "coverage": 50.0,
+          "messageProcessorCount": 8,
+          "coveredProcessorCount": 4
+        },
+        {
+          "name": "test-demographic-information-flow",
+          "type": "FLOW",
+          "coverage": 100.0,
+          "messageProcessorCount": 8,
+          "coveredProcessorCount": 8
+        },
+        {
+          "name": "test-demographic-information-mapping-flow",
+          "type": "FLOW",
+          "coverage": 100.0,
+          "messageProcessorCount": 12,
+          "coveredProcessorCount": 12
+        }
+      ]
+    },
+    {
+      "name": "test-message-processor.xml",
+      "flowCount": 1,
+      "coverage": 0.0,
+      "processorCount": 13,
+      "weight": 15.476190476190476,
+      "flows": [
+        {
+          "name": "test-message-processorFlow",
+          "type": "FLOW",
+          "coverage": 0.0,
+          "messageProcessorCount": 13,
+          "coveredProcessorCount": 0
+        }
+      ]
+    }
+  ]
+}
