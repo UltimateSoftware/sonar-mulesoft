@@ -29,5 +29,7 @@ MuleSoft source location (The location of your source XML files):
 ```bash
 sonar.coverage.mulesoft.xmlSourcePaths
 ```
-
-Release 0.1.0
+## Changelog
+### Release 0.5.0
+* This is the initial release.
+* Basic support for counting the flow coverage. The total number of processors for all flows is considered in the coverage weighting.
