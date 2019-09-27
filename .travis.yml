@@ -30,7 +30,7 @@ jobs:
   include:
   - stage: test
     script:
-    - "./gradlew shadowjar"
+    - "./gradlew assemble"
     - "./gradlew check jacocoTestReport"
     - sonar-scanner -X
   - stage: deploy_snapshot
