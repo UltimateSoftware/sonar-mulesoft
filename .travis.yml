@@ -1,6 +1,6 @@
 language: java
 dist: trusty
-install: travis_wait ./gradlew uploadArchives
+install:  true
 before_install:
   - openssl aes-256-cbc -K $encrypted_2ed9e0b2bf4a_key -iv $encrypted_2ed9e0b2bf4a_iv -in secring.gpg.enc -out secring.gpg -d
 sudo: required
@@ -37,7 +37,7 @@ jobs:
     script: "./ci_scripts/deploy_snapshot.sh"
   - stage: deploy
     script:
-      - "./gradlew uploadArchives -Psigning.keyId=$KEY_ID -Psigning.password=$KEY_PASSWORD"
+      - "travis_wait ./gradlew uploadArchives -Psigning.keyId=$KEY_ID -Psigning.password=$KEY_PASSWORD"
 env:
   global:
   - secure: WpgiWOTu+aZ0PgItiUkkDJg1KX3rKDHTKBRoUhFErPr+RhJi9gdGa+okxjjTMwZg3fYcikRQUHjCDC6t4TWvXtULsfrUVbIwJJ5gp8oPwhtsGYwFWIcKAuu1408EF3D3UB9bVss7IKeyLWAREM0/BSbPo6JrMy5yUH2sRtAVS/Dfx2EdWOH2qC8n0XXxEKZDQ7VpdxmaVrS9yHfucgpUu0RadBuyiAIHNSHgvUaPcgYQErtpo07xVzL4MIXqafDzqaUcdlD+vb3E/vYGmsJy0/pZQq1YUNEdiiDkMDGJjybDZQpk56fczDmIZbkJTdRBhKiHyt86fQpNlT4y4JAbaYrC/EOInuCshuHzFJyodnS4ONGxfzFj1HeO4C2THjt0oAgkaluoYinXWoZkQm7dMWbl4MGWjIDFT4pDIpGWIgUAjczMMWtERU5cvBwJR6Y+fyqISuKO10U2B6DT8G3jGXyphw8V7CucfXpzXkXga3wyMaUpkC/W3Mi8K8ndaY7qxJo5l9yfLUaryyt0VH/AAhptQQFnFrDiLlzL+rrWwEOLYyuR6YcWccdH+lvtR7E/ogAk02RAWmUSbbiEoOUAZzKkvExCwpfllHeC99r8Gfu+e1kFBfdPTEnhR7Vy8ZtfOzaRYwPvF6j6Dnl+OS1sfwIkejbTmF3HYoI4h/ySVxg=
