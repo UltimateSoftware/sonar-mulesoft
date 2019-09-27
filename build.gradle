@@ -40,6 +40,11 @@ tasks.withType(Javadoc) {
     options.encoding = 'UTF-8'
 }
 
+jar {
+    enabled = false
+    dependsOn(shadowJar { classifier = null })
+}
+
 allprojects {
     repositories {
         mavenCentral()
